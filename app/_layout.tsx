@@ -12,16 +12,16 @@ export default function RootLayout() {
 	const [showSplash, setShowSplash] = useState(true);
 
 	useEffect(() => {
-	  const timer = setTimeout(() => {
-		setShowSplash(false);
-	  }, 1000);
-  
-	  return () => clearTimeout(timer);
+		const timer = setTimeout(() => {
+			setShowSplash(false);
+		}, 1000);
+
+		return () => clearTimeout(timer);
 	}, []);
 
 	if (!loaded || showSplash) {
-	  return <LoadingScreen />;
+	  	return <LoadingScreen />;
 	}  
 
-	return <Stack />;
+	return <Stack screenOptions={{ headerShown: false }}/>;
 }

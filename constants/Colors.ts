@@ -12,5 +12,6 @@ export const COLORS = {
     DARKYELLOW: "#fdd74e",
     DARKGREEN: "#03954f",
 
-    ERROR: "#930009"
+    ERROR: "#930009",
+    GRAY: "#BCBEC0"
 }
