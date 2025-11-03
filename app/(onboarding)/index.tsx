@@ -4,6 +4,7 @@ import { IconOnboarding3 } from "@/assets/Icons/Onboarding3";
 import { OnBoardingItem } from "@/components/OnBoardingItem";
 import { COLORS } from "@/constants/Colors";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useRouter } from "expo-router";
 import React, { useRef, useState } from "react";
 import { Dimensions } from "react-native";
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
@@ -89,6 +90,7 @@ const SLIDES: SlideItem[] = [
 ];
 
 export default function Onboarding() {
+    const router = useRouter();
     const flatListRef = useRef<FlatList>(null);
     const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -114,9 +116,13 @@ export default function Onboarding() {
             flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
             setCurrentIndex(nextIndex);
         } else {
-
+            router.replace("/(authentication)");
         }
-    }
+    };
+
+    const handleSkip = () => {
+        router.replace("/(authentication)");
+    };
 
     return (
         <Container>
@@ -143,7 +149,7 @@ export default function Onboarding() {
             </PaginationDotContainer>
 
             <ButtonContainer>
-                <SkipButton><SkipText>Bỏ qua</SkipText></SkipButton>
+                <SkipButton onPress={handleSkip}><SkipText>Bỏ qua</SkipText></SkipButton>
                 <NextButton onPress={handleNext}><AntDesign name="right" size={24} color="white"/></NextButton>
             </ButtonContainer>
         </Container>
