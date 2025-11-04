@@ -16,7 +16,7 @@ const { width } = Dimensions.get("window");
 const Container = styled.View`
     flex: 1;
     background-color: ${COLORS.LIGHTGREEN};
-    padding-top: 150px;
+    padding-top: 40%;
 `;
 
 const FlatListContainer = styled.View`
