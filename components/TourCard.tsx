@@ -20,8 +20,9 @@ const DestinationText = styled.Text`
 `;
 
 const TourCreatedDate = styled.Text`
-    font-size: 16px;
-    font-family: "Nunito-SemiBold";
+    font-size: 12px;
+    font-family: "Nunito-Regular";
+    color: ${COLORS.PUREGRAY};
 `;
 
 type TourCardProps = {

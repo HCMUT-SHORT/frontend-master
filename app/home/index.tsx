@@ -15,11 +15,11 @@ const Container = styled.View`
 `;
 
 const MainContainer = styled.View`
-    padding-top: 40%;
+    padding-top: 35%;
 `;
 
 const Title = styled.Text`
-    font-size: 24px;
+    font-size: 22px;
     font-family: "Nunito-SemiBold";
 `;
 
@@ -39,7 +39,7 @@ const MyTourText = styled.Text`
 
 const SeeAllTour = styled.Text`
     font-family: "Nunito-Regular";
-    font-size: 16px;
+    font-size: 14px;
     color: ${COLORS.DARKGREEN};
 `;
 
@@ -122,6 +122,10 @@ export default function Home() {
                     keyExtractor={(item) => item.id}
                     onScroll={onScroll}
                     scrollEventThrottle={16}
+                    snapToInterval={ITEM_WIDTH + SPACING}
+                    decelerationRate={"fast"}
+                    snapToAlignment={"center"}
+                    bounces={false}
                 />
             </MainContainer>
         </Container>

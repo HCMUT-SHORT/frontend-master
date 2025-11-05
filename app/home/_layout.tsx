@@ -27,7 +27,6 @@ export default function HomeLayout() {
                     paddingTop: 10,
                     backgroundColor: COLORS.PUREWHITE
                 },
-                animation: 'shift'
             }}
         >
             <Tabs.Screen 
