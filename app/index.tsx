@@ -1,4 +1,5 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 
@@ -7,9 +8,13 @@ export default function AppIndex() {
 
     useEffect(() => {
         const routeFinding = async () => {
-            const nextRoute = "/onboarding";
+            const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
 
-            setTimeout(() => router.replace(nextRoute), 1000);
+            if (hasOnboarded === "true") {
+                setTimeout(() => router.replace("/home"), 500);
+            } else {
+                setTimeout(() => router.replace("/onboarding"), 500);
+            }
         };
 
         routeFinding();

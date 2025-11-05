@@ -4,6 +4,7 @@ import { IconOnboarding3 } from "@/assets/Icons/Onboarding3";
 import { OnBoardingItem } from "@/components/OnBoardingItem";
 import { COLORS } from "@/constants/Colors";
 import AntDesign from '@expo/vector-icons/AntDesign';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import React, { useEffect, useRef, useState } from "react";
 import { Dimensions } from "react-native";
@@ -114,17 +115,19 @@ export default function Onboarding() {
         }
     });
 
-    const handleNext = () => {
+    const handleNext = async () => {
         const nextIndex = currentIndex + 1;
         if (nextIndex < SLIDES.length) {
             flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
             setCurrentIndex(nextIndex);
         } else {
+            await AsyncStorage.setItem("hasOnboarded", "true");
             router.replace("/home");
         }
     };
 
-    const handleSkip = () => {
+    const handleSkip = async () => {
+        await AsyncStorage.setItem("hasOnboarded", "true");
         router.replace("/home");
     };
 
