@@ -1,6 +1,9 @@
 import { COLORS } from "@/constants/Colors";
+import { AppDispatch, RootState } from "@/redux/store";
+import { signup } from "@/redux/userSlice";
 import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 import { InputField } from "./InputField";
 import { LayoutModal } from "./LayoutModal";
@@ -41,6 +44,13 @@ const ButtonText = styled.Text`
 	font-weight: 500;
 `;
 
+const ErrorText = styled.Text`
+    color: ${COLORS.RED};
+    padding: 0;
+    margin-top: -10px;
+    margin-bottom: -10px;
+`;
+
 type SignupModalProps = {
     onLoginPress: () => void;
 }
@@ -53,19 +63,44 @@ interface SignupForm {
 
 export function SignupModal ({ onLoginPress } : SignupModalProps) {
 	const router = useRouter();
-	const [form, setForm] = useState<SignupForm>({
-		fullName: '',
-		email: '',
-		password: '',
-	});
+	const [form, setForm] = useState<SignupForm>({ fullName: '', email: '', password: '' });
+	const [localError, setLocalError] = useState<string>('');
+	const dispatch = useDispatch<AppDispatch>();
+	const loading = useSelector((state: RootState) => state.user.loading);
+	const error = useSelector((state: RootState) => state.user.error);
+	const userId = useSelector((state: RootState) => state.user.userId);
 
 	const handleChange = (key: keyof SignupForm, value: string) => {
 		setForm((prev) => ({ ...prev, [key]: value }));
 	};
 
 	const handleSignup = () => {
-		router.replace("/home");
+		if (!form.fullName.trim()) {
+			setLocalError("Vui lòng điền họ và tên");
+			return;
+		}
+		if (!form.email.trim()) {
+			setLocalError("Vui lòng điền email");
+			return;
+		}
+		if (!form.password.trim()) {
+			setLocalError("Vui lòng điền mật khẩu");
+			return;
+		}
+		if (form.password.length < 6) {
+			setLocalError("Mật khẩu phải có ít nhất 6 ký tự");
+			return;
+		}
+
+		setLocalError('');
+		dispatch(signup(form));
 	};
+
+	useEffect(() => {
+		if (userId) {
+            router.replace("/home");
+        }
+	}, [userId, router]);
 
     return (
         <LayoutModal modalTitle={"Đăng ký tài khoản"} backgroundColor={COLORS.WHITE}>
@@ -94,8 +129,12 @@ export function SignupModal ({ onLoginPress } : SignupModalProps) {
                  	onChangeText={(text) => handleChange('password', text)} 
 				/>
 
-                <Button onPress={handleSignup}>
-                    <ButtonText>Đăng ký</ButtonText>
+				<ErrorText>{localError || error}</ErrorText>
+
+                <Button style={{ opacity: loading ? 0.5 : 1 }} disabled={loading} onPress={handleSignup}>
+                    <ButtonText>
+						{loading ? "Đang đăng ký..." : "Đăng ký"}
+					</ButtonText>
                 </Button>
 
 				<ButtonContainer>
