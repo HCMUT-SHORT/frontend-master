@@ -2,7 +2,7 @@ import { CompassIcon } from "@/assets/Icons/CompassIcon";
 import { HomeIcon } from "@/assets/Icons/HomeIcon";
 import { PlusIcon } from "@/assets/Icons/PlusIcon";
 import { COLORS } from "@/constants/Colors";
-import { Tabs } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
@@ -17,6 +17,8 @@ const CreateButton = styled.TouchableOpacity`
 `;
 
 export default function HomeLayout() {
+    const router = useRouter();
+
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTGREEN }} edges={["top"]}>
             <Tabs 
@@ -35,7 +37,7 @@ export default function HomeLayout() {
                     name="index"
                     options={{
                         title: 'Nhà',
-                        tabBarIcon: ({ focused, color, size }) => (
+                        tabBarIcon: ({ focused }) => (
                             <HomeIcon color={focused ? COLORS.DARKGREEN : COLORS.GRAY} />
                         ),
                     }}
@@ -45,20 +47,19 @@ export default function HomeLayout() {
                     options={{
                         tabBarLabel: () => null,
                         tabBarIcon: () => (
-                            <CreateButton>
+                            <CreateButton onPress={() => {
+                                router.push("/tourcreate")
+                            }}>
                                 <PlusIcon/>
                             </CreateButton>
                         )
-                    }}
-                    listeners={{
-                        tabPress: (e) => {e.preventDefault();}
                     }}
                 />
                 <Tabs.Screen 
                     name="tours"
                     options={{
                         title: 'Tour của tôi',
-                        tabBarIcon: ({ focused, color, size }) => (
+                        tabBarIcon: ({ focused }) => (
                             <CompassIcon color={focused ? COLORS.DARKGREEN : COLORS.GRAY} />
                         ),
                     }}

@@ -70,10 +70,6 @@ export function SignupModal ({ onLoginPress } : SignupModalProps) {
 	const error = useSelector((state: RootState) => state.user.error);
 	const userId = useSelector((state: RootState) => state.user.userId);
 
-	const handleChange = (key: keyof SignupForm, value: string) => {
-		setForm((prev) => ({ ...prev, [key]: value }));
-	};
-
 	const handleSignup = () => {
 		if (!form.fullName.trim()) {
 			setLocalError("Vui lòng điền họ và tên");
@@ -106,27 +102,27 @@ export function SignupModal ({ onLoginPress } : SignupModalProps) {
         <LayoutModal modalTitle={"Đăng ký tài khoản"} backgroundColor={COLORS.WHITE}>
             <FormContainer>
 				<InputField 
-					placeholder="Họ và tên:" 
-					keyboardType="default"
-					secureText={false}
-					value={form.fullName} 
-					onChangeText={(text) => handleChange('fullName', text)}
+					value={form.fullName}
+					onChange={(text: string) => setForm(prev => ({ ...prev, fullName: text }))}
+					placeholder={"Họ và tên"}
+					fieldType={"default"}
+					keyboardType={"default"}
 				/>
 								
                 <InputField 
-					placeholder="Email:" 
-					keyboardType="email-address"
-					secureText={false}
 					value={form.email}
-					onChangeText={(text) => handleChange('email', text)}
+					onChange={(text: string) => setForm(prev => ({ ...prev, email: text}))}
+					placeholder={"Email" }
+					fieldType={"default"}
+					keyboardType={"email-address"}
 				/>
 
 				<InputField 
-					placeholder="Mật khẩu:"
-					keyboardType="default" 
-					secureText={true}
 					value={form.password}
-                 	onChangeText={(text) => handleChange('password', text)} 
+					onChange={(text: string) => setForm(prev => ({ ...prev, password: text}))} 
+					placeholder={"Mật khẩu"}
+					fieldType={"secure"}
+					keyboardType={"default"}
 				/>
 
 				<ErrorText>{localError || error}</ErrorText>

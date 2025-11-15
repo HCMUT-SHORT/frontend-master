@@ -68,11 +68,7 @@ export function LoginModal ({ onSignupPress } : LoginModalProps) {
     const loading = useSelector((state: RootState) => state.user.loading);
     const error = useSelector((state: RootState) => state.user.error );
     const userId = useSelector((state: RootState) => state.user.userId);
-
-    const handleChange = (key: keyof LoginForm, value: string) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
-    };
-
+    
     useEffect(() => {
         if (userId) {
             router.replace("/home");
@@ -83,19 +79,19 @@ export function LoginModal ({ onSignupPress } : LoginModalProps) {
         <LayoutModal modalTitle={"Đăng nhập"} backgroundColor={COLORS.WHITE}>
             <FormContainer>
                 <InputField 
-                    placeholder="Email:" 
-                    keyboardType="email-address"
-                    secureText={false}
                     value={form.email}
-                    onChangeText={(text) => handleChange('email', text)}
+                    onChange={(text: string) => setForm(prev => ({ ...prev, email: text}))}
+                    placeholder={"Email" }
+                    fieldType={"default"}
+                    keyboardType={"email-address"}
                 />
 
                 <InputField 
-                    placeholder="Mật khẩu:" 
-                    keyboardType="email-address"
-                    secureText={true}
                     value={form.password}
-                    onChangeText={(text) => handleChange('password', text)}
+                    onChange={(text: string) => setForm(prev => ({ ...prev, password: text}))} 
+                    placeholder={"Mật khẩu"}
+                    fieldType={"secure"}
+                    keyboardType={"default"}
                 />
 
                 <ErrorText>{error}</ErrorText>

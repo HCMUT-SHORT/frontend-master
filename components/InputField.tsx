@@ -1,14 +1,15 @@
 import { COLORS } from "@/constants/Colors";
+import EvilIcons from '@expo/vector-icons/EvilIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import React from "react";
 import styled from "styled-components/native";
 
 type InputFieldProps = {
-    placeholder: string;
-    value: string;
-    onChangeText: (text: string) => void;
-    secureText: boolean;
-    keyboardType: "default" | "email-address" | "numeric";
+	value: string | null;
+	onChange: (value: string) => void;
+	placeholder: string;
+	fieldType: "default" | "secure" | "search";
+	keyboardType: "default" | "email-address" | "numeric";
 };
 
 const InputContainer = styled.View`
@@ -30,24 +31,28 @@ const IconContainer = styled.View`
 	top: 12px;
 `;
 
-export function InputField({ placeholder, value, onChangeText, secureText, keyboardType = "default" }: InputFieldProps) {
+export function InputField({ value, onChange, placeholder, fieldType, keyboardType }: InputFieldProps) {
 
 	return (
 		<InputContainer>
 
 		<StyledInput
-			placeholder={placeholder}
 			value={value}
-			onChangeText={onChangeText}
-			secureTextEntry={!!secureText}
-			placeholderTextColor={COLORS.GRAY}
+			onChangeText={onChange}
+			placeholder= {placeholder}
+			secureTextEntry={fieldType === "secure"}
 			keyboardType={keyboardType}
-			hasIcon={!!secureText}
 		/>
 
-		{secureText && (
+		{fieldType === "secure" && (
 			<IconContainer>
 				<MaterialIcons name="lock" size={18} color={COLORS.GRAY} />
+			</IconContainer>
+		)}
+
+		{fieldType === "search" && (
+			<IconContainer>
+				<EvilIcons name="search" size={24} color="black" />
 			</IconContainer>
 		)}
 		
