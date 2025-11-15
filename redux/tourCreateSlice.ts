@@ -4,11 +4,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface TourCreateState {
     destination: string | null;
     travelType: string | null;
+    checkInDate: string | null;
+    checkOutDate: string | null;
 };
 
 const initialState: TourCreateState = {
     destination: null,
-    travelType: null
+    travelType: null,
+    checkInDate: null,
+    checkOutDate: null,
 };
 
 const tourCreateSlice = createSlice({

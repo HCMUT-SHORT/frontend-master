@@ -54,6 +54,9 @@ export default function HomeLayout() {
                             </CreateButton>
                         )
                     }}
+                    listeners={{
+                        tabPress: (e) => {e.preventDefault();}
+                    }}
                 />
                 <Tabs.Screen 
                     name="tours"

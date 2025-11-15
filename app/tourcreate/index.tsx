@@ -2,6 +2,7 @@ import { InputField } from "@/components/InputField";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setTourCreateField } from "@/redux/tourCreateSlice";
+import { useRouter } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 
@@ -63,6 +64,7 @@ const ContinueText = styled.Text`
 `;
 
 export default function TourCreate1() {
+    const router = useRouter();
     const destination = useSelector((state: RootState) => state.tourCreate.destination);
     const travelType = useSelector((state: RootState) => state.tourCreate.travelType);
     const dispatch = useDispatch<AppDispatch>();
@@ -105,7 +107,7 @@ export default function TourCreate1() {
                 })}
             </TravelTypeContainer>
             
-            <ContinueButton disabled={!(destination && travelType)}>
+            <ContinueButton onPress={() => router.push("/tourcreate/tour2")} disabled={!(destination && travelType)}>
                 <ContinueText>Tiếp tục</ContinueText>
             </ContinueButton>
         </Container>
