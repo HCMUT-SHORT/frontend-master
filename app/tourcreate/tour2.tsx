@@ -1,7 +1,10 @@
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setTourCreateField } from "@/redux/tourCreateSlice";
-import { useEffect, useState } from "react";
+import MultiSlider from "@ptomasroos/react-native-multi-slider";
+import { useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Dimensions } from "react-native";
 import { Calendar, DateData, LocaleConfig } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
 import { useDispatch, useSelector } from "react-redux";
@@ -16,6 +19,11 @@ LocaleConfig.locales['vi'] = {
 };
 
 LocaleConfig.defaultLocale = 'vi';
+
+type CustomLabelProps = {
+    MinBuggetLimit: string,
+    MaxBuggetLimit: string
+};
 
 const Container = styled.View`
     background-color: ${COLORS.LIGHTGREEN};
@@ -32,13 +40,67 @@ const CalendarText = styled.Text`
 const ErrorText = styled.Text`
     color: ${COLORS.RED};
     font-family: "Nunito-Regular";
-    font-size: 10px;
+    font-size: 14px;
     margin-top: 5px;
 `;
 
+const BuggetText = styled.Text`
+    font-family: "Nunito-Regular";
+    font-size: 20px;
+    margin-bottom: 5px;
+    margin-top: 10px;
+`;
+
+const SliderContainer = styled.View`
+    justify-content: center;
+    align-items: center;
+`;
+
+const CustomLabelWrapper = styled.View`
+    flex-direction: row;
+    justify-content: space-between;
+    margin-inline: -15px;
+    margin-bottom: -10px;
+`;
+
+const CustomLabelText =styled.Text`
+    font-family: "Nunito-Regular";
+    color: ${COLORS.DARKGREEN};
+`;
+
+const ContinueButton = styled.TouchableOpacity<{ disabled: boolean }>`
+    align-self: flex-end;
+    align-items: flex-end;
+    margin-top: 20px;
+    background-color: ${COLORS.DARKYELLOW};
+    padding: 10px 15px;
+    border-radius: 8px;
+    opacity: ${({ disabled } : { disabled: boolean }) => (disabled ? 0.4 : 1)};
+`;
+
+const ContinueText = styled.Text`
+    color: ${COLORS.DARKGREEN};
+    font-family: "Nunito-SemiBold";
+    font-size: 14px;
+`;
+
+const CustomLabel = ({ MinBuggetLimit, MaxBuggetLimit } : CustomLabelProps) => {
+
+    return (
+        <CustomLabelWrapper>
+            <CustomLabelText>{MinBuggetLimit}</CustomLabelText>
+            <CustomLabelText>{MaxBuggetLimit}</CustomLabelText>
+        </CustomLabelWrapper>
+    )
+}
+
 export default function TourCreate2() {
+    const router = useRouter();
+    const { width } = Dimensions.get("window");
     const checkInDate = useSelector((state: RootState) => state.tourCreate.checkInDate);
     const checkOutDate = useSelector((state: RootState) => state.tourCreate.checkOutDate);
+    const minBugget = useSelector((state: RootState) => state.tourCreate.MinBugget);
+    const maxBugget = useSelector((state: RootState) => state.tourCreate.MaxBugget);
     const dispatch = useDispatch<AppDispatch>();
     const [errorText, setErrorText] = useState<string>("");
 
@@ -137,6 +199,43 @@ export default function TourCreate2() {
                 }}
             />
             <ErrorText>{errorText}</ErrorText>
+            
+            <BuggetText>Chi phí</BuggetText>
+
+            <SliderContainer>
+                <MultiSlider
+                    values={[
+                        minBugget ? Number(minBugget) : 1000000,
+                        maxBugget ? Number(maxBugget) : 100000000
+                    ]}
+                    onValuesChange={(values) => {
+                        const [min, max] = values;
+                        dispatch(setTourCreateField({ key: "MinBugget", value: String(min) }));
+                        dispatch(setTourCreateField({ key: "MaxBugget", value: String(max) }));
+                    }}
+                    min={1000000}
+                    max={100000000}
+                    step={1000000}
+                    allowOverlap={false}
+                    snapped
+                    sliderLength={width - 64}
+                    selectedStyle={{ backgroundColor: COLORS.DARKGREEN }}
+                    markerStyle={{ backgroundColor: COLORS.DARKGREEN, height: 20, width: 20, borderColor: "black", borderWidth: 1 }}
+                    enableLabel={true}
+                    customLabel={() => {
+                        const min = minBugget ? Number(minBugget).toLocaleString("en-US") : "1,000,000";
+                        const max = maxBugget ? Number(maxBugget).toLocaleString("en-US") : "100,000,000";
+                        return ( <CustomLabel MinBuggetLimit={min} MaxBuggetLimit={max}/> );
+                    }}
+                />
+            </SliderContainer>
+
+            <ContinueButton 
+                disabled={!(checkInDate && checkOutDate)}
+                onPress={() => router.replace("/tourEdit")}
+            >
+                <ContinueText>Tiếp tục</ContinueText>
+            </ContinueButton>
         </Container>
     )
 }

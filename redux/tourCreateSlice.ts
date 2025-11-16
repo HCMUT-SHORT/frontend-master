@@ -6,6 +6,8 @@ interface TourCreateState {
     travelType: string | null;
     checkInDate: string | null;
     checkOutDate: string | null;
+    MinBugget: string | null;
+    MaxBugget: string | null;
 };
 
 const initialState: TourCreateState = {
@@ -13,6 +15,8 @@ const initialState: TourCreateState = {
     travelType: null,
     checkInDate: null,
     checkOutDate: null,
+    MinBugget: null,
+    MaxBugget: null
 };
 
 const tourCreateSlice = createSlice({
