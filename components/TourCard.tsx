@@ -1,4 +1,5 @@
 import { COLORS } from "@/constants/Colors";
+import { parseTimestamp } from "@/utility/timeConverter";
 import styled from "styled-components/native";
 
 const Container = styled.View`
@@ -26,23 +27,20 @@ const TourCreatedDate = styled.Text`
 `;
 
 type TourCardProps = {
-    destination: string,
-    tourCreatedDate: string,
-    tourImage: "image1" | "image2" | "image3";
+    destination: string | null,
+    createdAt: string | null,
+    imageUrl: string | null
 };
 
-const images: Record<string, any> = {
-    "image1": require("../assets/temp/image1.png"),
-    "image2": require("../assets/temp/image2.png"),
-    "image3": require("../assets/temp/image3.png"),  
-};
+export function TourCard ({ destination, createdAt, imageUrl } : TourCardProps) {
+    const time = createdAt ? parseTimestamp(createdAt) : null;
+    const formattedDate = time ? `${time.dd.toString().padStart(2, "0")}/${time.mm.toString().padStart(2, "0")}/${time.year}`: "";
 
-export function TourCard ({ destination, tourCreatedDate, tourImage } : TourCardProps) {
     return (
         <Container>
-            <Image source={images[tourImage]} resizeMode="cover"/>
+            <Image source={{ uri: imageUrl || "" }} resizeMode="cover"/>
             <DestinationText>{destination}</DestinationText>
-            <TourCreatedDate>{tourCreatedDate}</TourCreatedDate>
+            <TourCreatedDate>{formattedDate}</TourCreatedDate>
         </Container>
     )
 }

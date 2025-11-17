@@ -1,9 +1,14 @@
+import { axiosClient } from "@/api/axiosClient";
 import { CompassIcon } from "@/assets/Icons/CompassIcon";
 import { HomeIcon } from "@/assets/Icons/HomeIcon";
 import { PlusIcon } from "@/assets/Icons/PlusIcon";
 import { COLORS } from "@/constants/Colors";
+import { AppDispatch, RootState } from "@/redux/store";
+import { addTour } from "@/redux/toursSlice";
 import { Tabs, useRouter } from "expo-router";
+import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 
 const CreateButton = styled.TouchableOpacity`
@@ -18,6 +23,38 @@ const CreateButton = styled.TouchableOpacity`
 
 export default function HomeLayout() {
     const router = useRouter();
+    const userId = useSelector((state: RootState) => state.user.userId);
+    const dispatch = useDispatch<AppDispatch>();
+
+    useEffect(() => {
+        const fetchUserTours = async () => {
+            if (!userId) return;
+
+            try {
+                const response = await axiosClient.get(`/tour/getUserTours/${userId}`);
+                
+                response.data.forEach((tour: any) => {
+                    dispatch(addTour({
+                        id: tour.id,
+                        createdAt: tour.createdAt,
+                        createdBy: tour.createdBy,
+                        destination: tour.destination,
+                        checkInDate: tour.checkindate,
+                        checkOutDate: tour.checkoutdate,
+                        minBugget: tour.minBugget.toString(), 
+                        maxBugget: tour.maxBugget.toString(),
+                        travelType: tour.travelType,
+                        imageUrl: tour.imageUrl
+                    }));
+                })
+            } catch(error: any) {
+                console.log("There is an error fetching user tours: ", error.message);
+                return;
+            }
+        };
+
+        fetchUserTours();
+    }, [userId, dispatch])
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTGREEN }} edges={["top"]}>

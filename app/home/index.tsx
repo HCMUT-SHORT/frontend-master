@@ -1,7 +1,10 @@
 import { TourCard } from "@/components/TourCard";
 import { COLORS } from "@/constants/Colors";
+import { TourState } from "@/constants/type";
+import { RootState } from "@/redux/store";
 import { Dimensions } from "react-native";
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
+import { useSelector } from "react-redux";
 import styled from "styled-components/native";
 
 const { width } = Dimensions.get("window");
@@ -43,11 +46,6 @@ const SeeAllTour = styled.Text`
     color: ${COLORS.DARKGREEN};
 `;
 
-type SlideItem = {
-    id: string;
-    context: React.ReactNode;
-};
-
 function AnimatedCard({ index, scrollX, children } : { index: number; scrollX: SharedValue<number>; children: React.ReactNode }) {
     const animatedStyle = useAnimatedStyle(() => {
         const inputRange = [
@@ -82,11 +80,14 @@ function AnimatedCard({ index, scrollX, children } : { index: number; scrollX: S
 }
 
 export default function Home() {
-    const SLIDES: SlideItem[] = [
-        { id: "1", context: <TourCard destination="Quy Nhơn" tourCreatedDate="2/11/2025" tourImage="image1" /> },
-        { id: "2", context: <TourCard destination="Hà Nội" tourCreatedDate="3/11/2025" tourImage="image2" /> },
-        { id: "3", context: <TourCard destination="Hồ Chí Minh" tourCreatedDate="4/11/2025" tourImage="image3" /> },
-    ];
+    const tours = useSelector((state: RootState) => state.tours);
+
+    const today = new Date().getTime();
+    const top3Tours = [...tours].filter(t => t.createdAt).sort((a, b) => {
+        const dateA = new Date(a.createdAt!).getTime();
+        const dateB = new Date(b.createdAt!).getTime();
+        return Math.abs(dateA - today) - Math.abs(dateB - today);
+    }).slice(0, 3);
 
     const scrollX = useSharedValue(0);
 
@@ -96,10 +97,10 @@ export default function Home() {
         },
     });
 
-    const renderItem = ({ item, index }: { item: SlideItem; index: number }) => {
+    const renderItem = ({ item, index }: { item: TourState; index: number }) => {
         return (
             <AnimatedCard index={index} scrollX={scrollX}>
-                {item.context}
+                <TourCard destination={item.destination} imageUrl={item.imageUrl} createdAt={item.createdAt}/>
             </AnimatedCard>
         );
     };
@@ -115,11 +116,10 @@ export default function Home() {
                 </MytourTextContainer>
 
                 <Animated.FlatList
-                    data={SLIDES}
+                    data={top3Tours}
                     renderItem={renderItem}
                     horizontal
                     showsHorizontalScrollIndicator={false}
-                    keyExtractor={(item) => item.id}
                     onScroll={onScroll}
                     scrollEventThrottle={16}
                     snapToInterval={ITEM_WIDTH + SPACING}
