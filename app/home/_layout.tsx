@@ -41,8 +41,8 @@ export default function HomeLayout() {
                         destination: tour.destination,
                         checkInDate: tour.checkindate,
                         checkOutDate: tour.checkoutdate,
-                        minBugget: tour.minBugget.toString(), 
-                        maxBugget: tour.maxBugget.toString(),
+                        minBudget: tour.minBudget.toString(), 
+                        maxBudget: tour.maxBudget.toString(),
                         travelType: tour.travelType,
                         imageUrl: tour.imageUrl
                     }));

@@ -6,8 +6,8 @@ export interface TourState {
     destination: string | null;
     checkInDate: string | null;
     checkOutDate: string | null;
-    minBugget: string | null;
-    maxBugget: string | null;
+    minBudget: string | null;
+    maxBudget: string | null;
     travelType: string | null;
     imageUrl: string | null;
 };

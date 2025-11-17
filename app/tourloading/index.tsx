@@ -48,14 +48,14 @@ export default function TourLoading() {
     const travelType = useSelector((state: RootState) => state.tourCreate.travelType);
     const checkInDate = useSelector((state: RootState) => state.tourCreate.checkInDate);
     const checkOutDate = useSelector((state: RootState) => state.tourCreate.checkOutDate);
-    const minBugget = Number(useSelector((state: RootState) => state.tourCreate.MinBugget));
-    const maxBugget = Number(useSelector((state: RootState) => state.tourCreate.MaxBugget));
+    const minBudget = Number(useSelector((state: RootState) => state.tourCreate.MinBudget));
+    const maxBudget = Number(useSelector((state: RootState) => state.tourCreate.MaxBudget));
 
     const [errorText, setErrorText] = useState<string>("");
 
     useEffect(() => {
         const CreateTour = async () => {
-            if (!userId || !destination || !travelType || !checkInDate || !checkOutDate || !minBugget || !maxBugget) return;
+            if (!userId || !destination || !travelType || !checkInDate || !checkOutDate || !minBudget || !maxBudget) return;
 
             try {
                 const response = await axiosClient.post("/tour/create", {
@@ -64,9 +64,8 @@ export default function TourLoading() {
                     travelType: travelType,
                     checkInDate: checkInDate,
                     checkOutDate: checkOutDate,
-                    minBugget: minBugget,
-                    maxBugget: maxBugget,
-                    maxBuggett: maxBugget
+                    minBudget: minBudget,
+                    maxBudget: maxBudget
                 });
                 router.replace(`/tourEdit/${response.data.insertTourId}`);
             } catch (error: any) {
@@ -77,7 +76,7 @@ export default function TourLoading() {
         };
 
         CreateTour();
-    }, [userId, destination, travelType, checkInDate, checkOutDate, minBugget, maxBugget, router]);
+    }, [userId, destination, travelType, checkInDate, checkOutDate, minBudget, maxBudget, router]);
 
     return (
         <Container>

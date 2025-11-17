@@ -21,8 +21,8 @@ LocaleConfig.locales['vi'] = {
 LocaleConfig.defaultLocale = 'vi';
 
 type CustomLabelProps = {
-    MinBuggetLimit: string,
-    MaxBuggetLimit: string
+    MinBudgetLimit: string,
+    MaxBudgetLimit: string
 };
 
 const Container = styled.View`
@@ -44,7 +44,7 @@ const ErrorText = styled.Text`
     margin-top: 5px;
 `;
 
-const BuggetText = styled.Text`
+const BudgetText = styled.Text`
     font-family: "Nunito-Regular";
     font-size: 20px;
     margin-bottom: 5px;
@@ -84,12 +84,12 @@ const ContinueText = styled.Text`
     font-size: 14px;
 `;
 
-const CustomLabel = ({ MinBuggetLimit, MaxBuggetLimit } : CustomLabelProps) => {
+const CustomLabel = ({ MinBudgetLimit, MaxBudgetLimit } : CustomLabelProps) => {
 
     return (
         <CustomLabelWrapper>
-            <CustomLabelText>{MinBuggetLimit}</CustomLabelText>
-            <CustomLabelText>{MaxBuggetLimit}</CustomLabelText>
+            <CustomLabelText>{MinBudgetLimit}</CustomLabelText>
+            <CustomLabelText>{MaxBudgetLimit}</CustomLabelText>
         </CustomLabelWrapper>
     )
 }
@@ -99,8 +99,8 @@ export default function TourCreate2() {
     const { width } = Dimensions.get("window");
     const checkInDate = useSelector((state: RootState) => state.tourCreate.checkInDate);
     const checkOutDate = useSelector((state: RootState) => state.tourCreate.checkOutDate);
-    const minBugget = useSelector((state: RootState) => state.tourCreate.MinBugget);
-    const maxBugget = useSelector((state: RootState) => state.tourCreate.MaxBugget);
+    const minBudget = useSelector((state: RootState) => state.tourCreate.MinBudget);
+    const maxBudget = useSelector((state: RootState) => state.tourCreate.MaxBudget);
     const dispatch = useDispatch<AppDispatch>();
     const [errorText, setErrorText] = useState<string>("");
 
@@ -200,18 +200,18 @@ export default function TourCreate2() {
             />
             <ErrorText>{errorText}</ErrorText>
             
-            <BuggetText>Chi phí</BuggetText>
+            <BudgetText>Chi phí</BudgetText>
 
             <SliderContainer>
                 <MultiSlider
                     values={[
-                        minBugget ? Number(minBugget) : 1000000,
-                        maxBugget ? Number(maxBugget) : 100000000
+                        minBudget ? Number(minBudget) : 1000000,
+                        maxBudget ? Number(maxBudget) : 100000000
                     ]}
                     onValuesChange={(values) => {
                         const [min, max] = values;
-                        dispatch(setTourCreateField({ key: "MinBugget", value: String(min) }));
-                        dispatch(setTourCreateField({ key: "MaxBugget", value: String(max) }));
+                        dispatch(setTourCreateField({ key: "MinBudget", value: String(min) }));
+                        dispatch(setTourCreateField({ key: "MaxBudget", value: String(max) }));
                     }}
                     min={1000000}
                     max={100000000}
@@ -223,9 +223,9 @@ export default function TourCreate2() {
                     markerStyle={{ backgroundColor: COLORS.DARKGREEN, height: 20, width: 20, borderColor: "black", borderWidth: 1 }}
                     enableLabel={true}
                     customLabel={() => {
-                        const min = minBugget ? Number(minBugget).toLocaleString("en-US") : "1,000,000";
-                        const max = maxBugget ? Number(maxBugget).toLocaleString("en-US") : "100,000,000";
-                        return ( <CustomLabel MinBuggetLimit={min} MaxBuggetLimit={max}/> );
+                        const min = minBudget ? Number(minBudget).toLocaleString("en-US") : "1,000,000";
+                        const max = maxBudget ? Number(maxBudget).toLocaleString("en-US") : "100,000,000";
+                        return ( <CustomLabel MinBudgetLimit={min} MaxBudgetLimit={max}/> );
                     }}
                 />
             </SliderContainer>
