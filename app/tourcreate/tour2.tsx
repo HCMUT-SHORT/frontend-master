@@ -232,7 +232,7 @@ export default function TourCreate2() {
 
             <ContinueButton 
                 disabled={!(checkInDate && checkOutDate)}
-                onPress={() => router.replace("/tourEdit")}
+                onPress={() => router.replace("/tourloading")}
             >
                 <ContinueText>Tiếp tục</ContinueText>
             </ContinueButton>

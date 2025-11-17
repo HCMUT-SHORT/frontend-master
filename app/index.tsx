@@ -1,33 +1,36 @@
 import { axiosClient } from "@/api/axiosClient";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { AppDispatch } from "@/redux/store";
 import { setUser } from "@/redux/userSlice";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 
 export default function AppIndex() {
     const router = useRouter();
-
-    const getProfile = async (token: string) => {
-        try {
-            const response = await axiosClient.get("/auth/profile", {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            setUser({
-                username: response.data.user.fullName,
-                userId: response.data.user.id,
-                token: token
-            })
-            return response.data.user.id;
-        } catch (error: any) {
-            console.log("Invalid or expired token:", error.message);
-            await AsyncStorage.removeItem("token");
-            return null;
-        }
-    }
+    const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
+        const getProfile = async (token: string) => {
+            try {
+                const response = await axiosClient.get("/auth/profile", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+    
+                dispatch(setUser({
+                    username: response.data.user.fullName,
+                    userId: response.data.user.id,
+                    token: token
+                }))
+                return response.data.user.id;
+            } catch (error: any) {
+                console.log("Invalid or expired token:", error.message);
+                await AsyncStorage.removeItem("token");
+                return null;
+            }
+        }
+
         const routeFinding = async () => {
             const hasOnboarded = await AsyncStorage.getItem("hasOnboarded");
             const token = await AsyncStorage.getItem("token");
@@ -47,7 +50,7 @@ export default function AppIndex() {
         };
 
         routeFinding();
-    }, [router]);
+    }, [router, dispatch]);
 
     return <LoadingScreen/>
 }
