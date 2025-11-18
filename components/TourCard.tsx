@@ -1,5 +1,7 @@
 import { COLORS } from "@/constants/Colors";
-import { parseTimestamp } from "@/utility/timeConverter";
+import { formatDateDMY } from "@/utility/timeConverter";
+import { useRouter } from "expo-router";
+import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 const Container = styled.View`
@@ -27,20 +29,25 @@ const TourCreatedDate = styled.Text`
 `;
 
 type TourCardProps = {
+    tourId: string | null,
     destination: string | null,
-    createdAt: string | null,
+    checkInDate: string | null,
+    checkOutDate: string | null,
     imageUrl: string | null
 };
 
-export function TourCard ({ destination, createdAt, imageUrl } : TourCardProps) {
-    const time = createdAt ? parseTimestamp(createdAt) : null;
-    const formattedDate = time ? `${time.dd.toString().padStart(2, "0")}/${time.mm.toString().padStart(2, "0")}/${time.year}`: "";
+export function TourCard ({ tourId, destination, checkInDate, checkOutDate, imageUrl } : TourCardProps) {
+    const router = useRouter();
+    const checkInDateFormated = checkInDate ? formatDateDMY(checkInDate) : "";
+    const checkOutDateFormated = checkOutDate ? formatDateDMY(checkOutDate) : "";
 
     return (
         <Container>
-            <Image source={{ uri: imageUrl || "" }} resizeMode="cover"/>
+            <TouchableOpacity onPress={() => router.replace(`/overviewTour/${tourId}`)}>  
+                <Image source={{ uri: imageUrl || "" }} resizeMode="cover"/>
+            </TouchableOpacity>
             <DestinationText>{destination}</DestinationText>
-            <TourCreatedDate>{formattedDate}</TourCreatedDate>
+            <TourCreatedDate>{checkInDateFormated} - {checkOutDateFormated}</TourCreatedDate>
         </Container>
     )
 }

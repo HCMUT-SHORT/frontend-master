@@ -1,10 +1,11 @@
 import { axiosClient } from "@/api/axiosClient";
 import { WaitingCounter } from "@/components/WaitingCounter";
 import { COLORS } from "@/constants/Colors";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
+import { addTour } from "@/redux/toursSlice";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 
 const Container = styled.View`
@@ -50,6 +51,7 @@ export default function TourLoading() {
     const checkOutDate = useSelector((state: RootState) => state.tourCreate.checkOutDate);
     const minBudget = Number(useSelector((state: RootState) => state.tourCreate.MinBudget));
     const maxBudget = Number(useSelector((state: RootState) => state.tourCreate.MaxBudget));
+    const dispatch= useDispatch<AppDispatch>();
 
     const [errorText, setErrorText] = useState<string>("");
 
@@ -67,7 +69,22 @@ export default function TourLoading() {
                     minBudget: minBudget,
                     maxBudget: maxBudget
                 });
-                router.replace(`/tourEdit/${response.data.insertTourId}`);
+                
+                dispatch(addTour({
+                    id: response.data[0].id,
+                    createdAt: response.data[0].createdAt,
+                    createdBy: response.data[0].createdBy,
+                    destination: response.data[0].destination,
+                    checkInDate: response.data[0].checkindate,
+                    checkOutDate: response.data[0].checkoutdate,
+                    minBudget: response.data[0].minBudget.toString(), 
+                    maxBudget: response.data[0].maxBudget.toString(),
+                    travelType: response.data[0].travelType,
+                    imageUrl: response.data[0].imageUrl,
+                    placesToVisit: []
+                }));
+
+                router.replace(`/editTour/${response.data[0].id}`);
             } catch (error: any) {
                 console.log("There is an error creating new tour:", error.message);
                 setErrorText("Tạo tour gặp lỗi!")
@@ -76,7 +93,7 @@ export default function TourLoading() {
         };
 
         CreateTour();
-    }, [userId, destination, travelType, checkInDate, checkOutDate, minBudget, maxBudget, router]);
+    }, [userId, destination, travelType, checkInDate, checkOutDate, minBudget, maxBudget, router, dispatch]);
 
     return (
         <Container>

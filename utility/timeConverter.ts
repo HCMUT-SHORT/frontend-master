@@ -10,3 +10,8 @@ export function parseTimestamp(timestamp: string) {
         sec: date.getUTCSeconds()
     };
 }
+
+export function formatDateDMY(dateString: string): string {
+    const [year, month, day] = dateString.split("-");
+    return `${day}/${month}/${year}`;
+}

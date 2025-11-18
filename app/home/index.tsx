@@ -100,7 +100,14 @@ export default function Home() {
     const renderItem = ({ item, index }: { item: TourState; index: number }) => {
         return (
             <AnimatedCard index={index} scrollX={scrollX}>
-                <TourCard destination={item.destination} imageUrl={item.imageUrl} createdAt={item.createdAt}/>
+                <TourCard
+                    key={item.id}
+                    tourId={item.id}
+                    destination={item.destination} 
+                    imageUrl={item.imageUrl} 
+                    checkInDate={item.checkInDate} 
+                    checkOutDate={item.checkOutDate}
+                />
             </AnimatedCard>
         );
     };

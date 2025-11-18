@@ -24,6 +24,7 @@ const CreateButton = styled.TouchableOpacity`
 export default function HomeLayout() {
     const router = useRouter();
     const userId = useSelector((state: RootState) => state.user.userId);
+    const tours = useSelector((state: RootState) => state.tours);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
@@ -34,18 +35,23 @@ export default function HomeLayout() {
                 const response = await axiosClient.get(`/tour/getUserTours/${userId}`);
                 
                 response.data.forEach((tour: any) => {
-                    dispatch(addTour({
-                        id: tour.id,
-                        createdAt: tour.createdAt,
-                        createdBy: tour.createdBy,
-                        destination: tour.destination,
-                        checkInDate: tour.checkindate,
-                        checkOutDate: tour.checkoutdate,
-                        minBudget: tour.minBudget.toString(), 
-                        maxBudget: tour.maxBudget.toString(),
-                        travelType: tour.travelType,
-                        imageUrl: tour.imageUrl
-                    }));
+                    const exists = tours.some(t => t.id === tour.id);
+
+                    if (!exists) {
+                        dispatch(addTour({
+                            id: tour.id,
+                            createdAt: tour.createdAt,
+                            createdBy: tour.createdBy,
+                            destination: tour.destination,
+                            checkInDate: tour.checkindate,
+                            checkOutDate: tour.checkoutdate,
+                            minBudget: tour.minBudget.toString(), 
+                            maxBudget: tour.maxBudget.toString(),
+                            travelType: tour.travelType,
+                            imageUrl: tour.imageUrl,
+                            placesToVisit: []
+                        }));
+                    }
                 })
             } catch(error: any) {
                 console.log("There is an error fetching user tours: ", error.message);
@@ -54,7 +60,7 @@ export default function HomeLayout() {
         };
 
         fetchUserTours();
-    }, [userId, dispatch])
+    }, [userId, dispatch, tours])
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTGREEN }} edges={["top"]}>

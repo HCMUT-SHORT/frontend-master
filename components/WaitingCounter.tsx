@@ -17,7 +17,7 @@ const WaitingTimeText = styled.Text`
 `;
 
 export function WaitingCounter() {
-    const [seconds, setSeconds] = useState<number>(45);
+    const [seconds, setSeconds] = useState<number>(60);
     const scale = useSharedValue(1);
 
     useEffect(() => {
