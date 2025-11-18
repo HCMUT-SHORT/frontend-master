@@ -29,6 +29,7 @@ export default function HomeLayout() {
 
     useEffect(() => {
         const fetchUserTours = async () => {
+            if (tours.length > 0) return;
             if (!userId) return;
 
             try {

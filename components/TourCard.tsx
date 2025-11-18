@@ -3,17 +3,12 @@ import { formatDateDMY } from "@/utility/timeConverter";
 import { useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
+import { SkeletonImage } from "./SkeletonImage";
 
 const Container = styled.View`
     background-color: ${COLORS.LIGHTYELLOW};
     border-radius: 15px;
     padding: 14px;
-`;
-
-const Image = styled.Image`
-    width: 100%;
-    height: 268px;
-    border-radius: 15px;
 `;
 
 const DestinationText = styled.Text`
@@ -43,8 +38,8 @@ export function TourCard ({ tourId, destination, checkInDate, checkOutDate, imag
 
     return (
         <Container>
-            <TouchableOpacity onPress={() => router.replace(`/overviewTour/${tourId}`)}>  
-                <Image source={{ uri: imageUrl || "" }} resizeMode="cover"/>
+            <TouchableOpacity activeOpacity={1} onPress={() => router.replace(`/overviewTour/${tourId}`)}>  
+                <SkeletonImage uri={imageUrl || ""} height={268}/>
             </TouchableOpacity>
             <DestinationText>{destination}</DestinationText>
             <TourCreatedDate>{checkInDateFormated} - {checkOutDateFormated}</TourCreatedDate>

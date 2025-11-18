@@ -1,3 +1,4 @@
+import { SkeletonImage } from "@/components/SkeletonImage";
 import { TextTourDescription } from "@/components/TextTourDescription";
 import { COLORS } from "@/constants/Colors";
 import { RootState } from "@/redux/store";
@@ -13,11 +14,6 @@ const Container = styled.ScrollView`
     flex: 1;
     background-color: ${COLORS.LIGHTYELLOW};
     padding: 24px;
-`;
-
-const TourImage = styled.Image`
-    width: 100%;
-    height: 200px;
 `;
 
 const ToolContainer = styled.View`
@@ -59,7 +55,7 @@ export default function TourOverView() {
 
     return (
         <Container>
-            <TourImage source={{ uri: selectedTour?.imageUrl || "" }} resizeMode="cover"/>
+            <SkeletonImage uri={selectedTour?.imageUrl || "" } height={225}/>
             <ToolContainer>
                 <ToolButton>
                     <EvilIcons name="share-google" size={30} color="black" />

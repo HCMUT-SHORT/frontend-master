@@ -73,7 +73,7 @@ export function AccordionItem({ index, date, isExpanded, toggleAccordion, places
 
             <Collapsible collapsed={!isExpanded}>
                 <View>
-                    <PlacesToVisitCollapsible places={places}/>
+                    <PlacesToVisitCollapsible index={index} places={places}/>
                 </View>
             </Collapsible>
         </Container>

@@ -1,6 +1,9 @@
 import { COLORS } from "@/constants/Colors";
 import { PlaceToVisit } from "@/constants/type";
+import AntDesign from '@expo/vector-icons/AntDesign';
+import Feather from '@expo/vector-icons/Feather';
 import styled from "styled-components/native";
+import { SkeletonImage } from "./SkeletonImage";
 import { StarRender } from "./StarRender";
 
 const Container = styled.ScrollView`
@@ -13,24 +16,23 @@ const PlaceContainer = styled.View`
     border-radius: 8px;
 `;
 
-const PlaceImage = styled.Image`
-    width: 100%;
-    height: 150px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-`;
-
 const DetailWrapper = styled.View`
     padding: 12px;  
 `;
 
 const HeaderContainer = styled.View`
-    
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
 `;
 
 const PlaceName = styled.Text`
     font-family: "Nunito-SemiBold";
     font-size: 16px;
+`;
+
+const PlaceButton = styled.TouchableOpacity`
+    
 `;
 
 const RatingContainer = styled.View`
@@ -65,20 +67,33 @@ const PlacePrice = styled.Text`
 `;
 
 type PlacesToVisitCollapsibleProps = {
+    index: number;
     places: PlaceToVisit[] | [];
 }
 
-export function PlacesToVisitCollapsible({ places } : PlacesToVisitCollapsibleProps) {
+export function PlacesToVisitCollapsible({ index, places } : PlacesToVisitCollapsibleProps) {
+    const sortedPlaces = [...places].sort((a, b) => {
+        const aMatch = a.dayVisit === index ? 1 : 0;
+        const bMatch = b.dayVisit === index ? 1 : 0;
+        return bMatch - aMatch;
+    });
 
     return (
         <Container contentContainerStyle={{ gap: 15 }}>
-            {places.map((place) => (
+            {sortedPlaces.map((place) => (
                 <PlaceContainer key={place.id}>
-                    <PlaceImage source={{ uri: place.imageUrl || "" }}/>
+                    <SkeletonImage uri={place.imageUrl || ""} height={150}/>
 
                     <DetailWrapper>
                         <HeaderContainer>
                             <PlaceName>{place.name}</PlaceName>
+                            <PlaceButton>
+                                {place.dayVisit === index ? (
+                                    <Feather name="check" size={20} color={COLORS.DARKGREEN} />
+                                ) : (
+                                    <AntDesign name="plus-circle" size={18} color="black" />
+                                )}
+                            </PlaceButton>
                         </HeaderContainer>
 
                         <RatingContainer>
