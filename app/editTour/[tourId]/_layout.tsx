@@ -2,6 +2,7 @@ import { axiosClient } from "@/api/axiosClient";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
 import { addPlacesToVisit } from "@/redux/toursSlice";
+import { parseDays } from "@/utility/parseString";
 import Entypo from '@expo/vector-icons/Entypo';
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";
@@ -32,7 +33,21 @@ export default function TourEditLayout() {
 
             try {
                 const response = await axiosClient.get(`/tour/placestovisit/${tourId}`);
-                dispatch(addPlacesToVisit({ tourId: tourIdStr, places: response.data}))
+            
+                const transformedPlaces = response.data.map((place: any) => ({
+                    ...place,
+                    dayVisit: parseDays(place.dayVisit)
+                }));
+
+                const sortedPlaces = transformedPlaces.sort((a: any, b: any) => {
+                    if (b.rating !== a.rating) {
+                        return b.rating - a.rating;
+                    } else {
+                        return b.totalRating - a.totalRating;
+                    }
+                });
+
+                dispatch(addPlacesToVisit({ tourId: tourIdStr, places: sortedPlaces}))
             } catch (error: any) {
                 console.log("There is error fetching places to visit: ", error.message);
                 return;

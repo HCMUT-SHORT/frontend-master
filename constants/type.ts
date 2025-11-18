@@ -5,7 +5,7 @@ export interface PlaceToVisit {
     imageUrl: string;
     price: number;
     bestTimeToVisit: string;
-    dayVisit: number;
+    dayVisit: number[];
     rating: number;
     totalRating: number;
 };

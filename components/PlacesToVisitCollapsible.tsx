@@ -1,6 +1,6 @@
 import { COLORS } from "@/constants/Colors";
 import { PlaceToVisit } from "@/constants/type";
-import AntDesign from '@expo/vector-icons/AntDesign';
+import AntDesign from "@expo/vector-icons/AntDesign";
 import Feather from '@expo/vector-icons/Feather';
 import styled from "styled-components/native";
 import { SkeletonImage } from "./SkeletonImage";
@@ -72,23 +72,18 @@ type PlacesToVisitCollapsibleProps = {
 }
 
 export function PlacesToVisitCollapsible({ index, places } : PlacesToVisitCollapsibleProps) {
-    const sortedPlaces = [...places].sort((a, b) => {
-        const aMatch = a.dayVisit === index ? 1 : 0;
-        const bMatch = b.dayVisit === index ? 1 : 0;
-        return bMatch - aMatch;
-    });
 
     return (
         <Container contentContainerStyle={{ gap: 15 }}>
-            {sortedPlaces.map((place) => (
+            {places.map((place) => (
                 <PlaceContainer key={place.id}>
-                    <SkeletonImage uri={place.imageUrl || ""} height={150}/>
+                    <SkeletonImage uri={place.imageUrl || ""} height={200}/>
 
                     <DetailWrapper>
                         <HeaderContainer>
                             <PlaceName>{place.name}</PlaceName>
                             <PlaceButton>
-                                {place.dayVisit === index ? (
+                                {place.dayVisit.includes(index) ? (
                                     <Feather name="check" size={20} color={COLORS.DARKGREEN} />
                                 ) : (
                                     <AntDesign name="plus-circle" size={18} color="black" />
