@@ -1,9 +1,12 @@
+import { axiosClient } from "@/api/axiosClient";
 import { AccordionItem } from "@/components/AccordionItem";
+import { ContinueButton } from "@/components/ContinueButton";
 import { COLORS } from "@/constants/Colors";
 import { RootState } from "@/redux/store";
+import { stringifyDays } from "@/utility/stringConverter";
 import { formatDateDMY } from "@/utility/timeConverter";
-import { useLocalSearchParams } from "expo-router";
-import { useState } from "react";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import styled from "styled-components/native";
 
@@ -24,11 +27,18 @@ const AccordionItemWrapper = styled.View`
 `;
 
 export default function TourEdit() {
+    const router = useRouter();
     const { tourId } = useLocalSearchParams();
     const selectedTour = useSelector((state: RootState) => state.tours.find(t => t.id === tourId));
-    const checkInDate = selectedTour?.checkInDate;
-    const checkOutDate = selectedTour?.checkOutDate;
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    if (!selectedTour) {
+        return <></>
+    }
+
+    const checkInDate = selectedTour.checkInDate;
+    const checkOutDate = selectedTour.checkOutDate;
 
     const dates: string[] = [];
 
@@ -43,6 +53,28 @@ export default function TourEdit() {
         }
     }
 
+    const handleUpdatePlacesToVisit = async () => {
+        if (loading) return;
+            
+        try {
+            setLoading(true);
+
+            const updateItems = Object.entries(
+                selectedTour.changedPlaces).map(([placeId, days]) => ({
+                    id: placeId,
+                    dayVisit: stringifyDays(days)
+                })
+            );
+
+            await axiosClient.put("/tour/placestovisit", updateItems);
+            router.push(`/editTour/${tourId}/placesToStay`);
+        } catch (error: any) {
+            console.log("There is an error updating places to visit:", error.message);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <Container>
             <TextDisplay>Cùng sắp xếp chuyến đi nào</TextDisplay>
@@ -55,10 +87,16 @@ export default function TourEdit() {
                         date={date}
                         isExpanded={index === expandedIndex}
                         toggleAccordion={() => setExpandedIndex(expandedIndex === index ? null : index)}
-                        places={selectedTour?.placesToVisit || []}
+                        selectedTour={selectedTour}
                     />
                 ))}
             </AccordionItemWrapper>
+            
+            <ContinueButton
+                onPress={handleUpdatePlacesToVisit}
+                disabled={loading}
+                text={"Tiếp tục"}
+            />
         </Container>
     )
 }

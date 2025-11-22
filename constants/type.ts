@@ -21,5 +21,6 @@ export interface TourState {
     maxBudget: string | null;
     travelType: string | null;
     imageUrl: string | null;
-    placesToVisit: PlaceToVisit[]
+    placesToVisit: PlaceToVisit[];
+    changedPlaces: Record<string, number[]>;
 };

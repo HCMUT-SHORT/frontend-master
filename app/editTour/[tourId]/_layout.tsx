@@ -2,7 +2,7 @@ import { axiosClient } from "@/api/axiosClient";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
 import { addPlacesToVisit } from "@/redux/toursSlice";
-import { parseDays } from "@/utility/parseString";
+import { parseDays } from "@/utility/stringConverter";
 import Entypo from '@expo/vector-icons/Entypo';
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect } from "react";

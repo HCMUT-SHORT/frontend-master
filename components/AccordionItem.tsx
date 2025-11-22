@@ -1,5 +1,5 @@
 import { COLORS } from '@/constants/Colors';
-import { PlaceToVisit } from '@/constants/type';
+import { TourState } from '@/constants/type';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
@@ -41,10 +41,10 @@ type AccordionItemProps = {
     date: string;
     isExpanded: boolean;
     toggleAccordion: (value: boolean | null) => void;
-    places: PlaceToVisit[] | [];
+    selectedTour: TourState;
 }
 
-export function AccordionItem({ index, date, isExpanded, toggleAccordion, places } : AccordionItemProps) {
+export function AccordionItem({ index, date, isExpanded, toggleAccordion, selectedTour } : AccordionItemProps) {
     const rotation = useSharedValue(isExpanded ? 90 : 0);
 
     useEffect(() => {
@@ -73,7 +73,7 @@ export function AccordionItem({ index, date, isExpanded, toggleAccordion, places
 
             <Collapsible collapsed={!isExpanded}>
                 <View>
-                    <PlacesToVisitCollapsible index={index} places={places}/>
+                    <PlacesToVisitCollapsible index={index} selectedTour={selectedTour}/>
                 </View>
             </Collapsible>
         </Container>

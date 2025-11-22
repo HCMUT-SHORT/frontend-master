@@ -1,7 +1,10 @@
 import { COLORS } from "@/constants/Colors";
-import { PlaceToVisit } from "@/constants/type";
-import AntDesign from "@expo/vector-icons/AntDesign";
+import { TourState } from "@/constants/type";
+import { AppDispatch } from "@/redux/store";
+import { togglePlaceDayVisit } from "@/redux/toursSlice";
+import AntDesign from '@expo/vector-icons/AntDesign';
 import Feather from '@expo/vector-icons/Feather';
+import { useDispatch } from "react-redux";
 import styled from "styled-components/native";
 import { SkeletonImage } from "./SkeletonImage";
 import { StarRender } from "./StarRender";
@@ -68,41 +71,54 @@ const PlacePrice = styled.Text`
 
 type PlacesToVisitCollapsibleProps = {
     index: number;
-    places: PlaceToVisit[] | [];
+    selectedTour: TourState;
 }
 
-export function PlacesToVisitCollapsible({ index, places } : PlacesToVisitCollapsibleProps) {
+export function PlacesToVisitCollapsible({ index, selectedTour } : PlacesToVisitCollapsibleProps) {
+    const dispatch = useDispatch<AppDispatch>();
 
     return (
         <Container contentContainerStyle={{ gap: 15 }}>
-            {places.map((place) => (
-                <PlaceContainer key={place.id}>
-                    <SkeletonImage uri={place.imageUrl || ""} height={200}/>
+            {selectedTour.placesToVisit.map((place) => {
+                const dayVisit = selectedTour.changedPlaces[place.id] ?? place.dayVisit;
 
-                    <DetailWrapper>
-                        <HeaderContainer>
-                            <PlaceName>{place.name}</PlaceName>
-                            <PlaceButton>
-                                {place.dayVisit.includes(index) ? (
-                                    <Feather name="check" size={20} color={COLORS.DARKGREEN} />
-                                ) : (
-                                    <AntDesign name="plus-circle" size={18} color="black" />
-                                )}
-                            </PlaceButton>
-                        </HeaderContainer>
+                return (
+                    <PlaceContainer key={place.id}>
+                        <SkeletonImage uri={place.imageUrl || ""} height={200}/>
 
-                        <RatingContainer>
-                            <RatingScore>{place.rating}</RatingScore>
-                            <StarRender rating={place.rating}/>
-                            <RatingScore>({place.totalRating} lượt đánh giá)</RatingScore>
-                        </RatingContainer>
+                        <DetailWrapper>
+                            <HeaderContainer>
+                                <PlaceName>{place.name}</PlaceName>
+                                <PlaceButton 
+                                    onPress={() => 
+                                        dispatch(togglePlaceDayVisit({ 
+                                            tourId: selectedTour.id || "", 
+                                            placeId: place.id, 
+                                            day: index 
+                                        }))
+                                    }
+                                >
+                                    {dayVisit.includes(index) ? (
+                                        <Feather name="check" size={20} color={COLORS.DARKGREEN} />
+                                    ) : (
+                                        <AntDesign name="plus-circle" size={18} color="black" />
+                                    )}
+                                </PlaceButton>
+                            </HeaderContainer>
 
-                        <PlaceDetail>{place.detail}</PlaceDetail>
-                        <PlaceBestTimeToVisit>Thời gian tham quan: {place.bestTimeToVisit}</PlaceBestTimeToVisit>
-                        <PlacePrice>Giá vé: {place.price} đồng</PlacePrice>
-                    </DetailWrapper>
-                </PlaceContainer>
-            ))}
+                            <RatingContainer> 
+                                <RatingScore>{place.rating}</RatingScore>
+                                <StarRender rating={place.rating}/>
+                                <RatingScore>({place.totalRating} lượt đánh giá)</RatingScore>
+                            </RatingContainer>
+
+                            <PlaceDetail>{place.detail}</PlaceDetail>
+                            <PlaceBestTimeToVisit>Thời gian tham quan: {place.bestTimeToVisit}</PlaceBestTimeToVisit>
+                            <PlacePrice>Giá vé: {place.price} đồng</PlacePrice>
+                        </DetailWrapper>
+                    </PlaceContainer>
+                );
+            })}
         </Container>
     )
 }

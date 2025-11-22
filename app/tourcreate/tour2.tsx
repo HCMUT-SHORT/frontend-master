@@ -1,3 +1,4 @@
+import { ContinueButton } from "@/components/ContinueButton";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
 import { setTourCreateField } from "@/redux/tourCreateSlice";
@@ -66,22 +67,6 @@ const CustomLabelWrapper = styled.View`
 const CustomLabelText =styled.Text`
     font-family: "Nunito-Regular";
     color: ${COLORS.DARKGREEN};
-`;
-
-const ContinueButton = styled.TouchableOpacity<{ disabled: boolean }>`
-    align-self: flex-end;
-    align-items: flex-end;
-    margin-top: 20px;
-    background-color: ${COLORS.DARKYELLOW};
-    padding: 10px 15px;
-    border-radius: 8px;
-    opacity: ${({ disabled } : { disabled: boolean }) => (disabled ? 0.4 : 1)};
-`;
-
-const ContinueText = styled.Text`
-    color: ${COLORS.DARKGREEN};
-    font-family: "Nunito-SemiBold";
-    font-size: 14px;
 `;
 
 const CustomLabel = ({ MinBudgetLimit, MaxBudgetLimit } : CustomLabelProps) => {
@@ -233,9 +218,8 @@ export default function TourCreate2() {
             <ContinueButton 
                 disabled={!(checkInDate && checkOutDate)}
                 onPress={() => router.replace("/tourloading")}
-            >
-                <ContinueText>Tiếp tục</ContinueText>
-            </ContinueButton>
+                text={"Tiếp tục"}
+            />
         </Container>
     )
 }

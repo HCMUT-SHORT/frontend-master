@@ -1,3 +1,4 @@
+import { ContinueButton } from "@/components/ContinueButton";
 import { InputField } from "@/components/InputField";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
@@ -47,22 +48,6 @@ const TravelText = styled.Text<{ selected: boolean }>`
     font-size: 15px;
 `;
 
-const ContinueButton = styled.TouchableOpacity<{ disabled: boolean }>`
-    align-self: flex-end;
-    align-items: flex-end;
-    margin-top: 25px;
-    background-color: ${COLORS.DARKYELLOW};
-    padding: 10px 15px;
-    border-radius: 8px;
-    opacity: ${({ disabled } : { disabled: boolean }) => (disabled ? 0.4 : 1)};
-`;
-
-const ContinueText = styled.Text`
-    color: ${COLORS.DARKGREEN};
-    font-family: "Nunito-SemiBold";
-    font-size: 14px;
-`;
-
 export default function TourCreate1() {
     const router = useRouter();
     const destination = useSelector((state: RootState) => state.tourCreate.destination);
@@ -107,9 +92,11 @@ export default function TourCreate1() {
                 })}
             </TravelTypeContainer>
             
-            <ContinueButton onPress={() => router.push("/tourcreate/tour2")} disabled={!(destination && travelType)}>
-                <ContinueText>Tiếp tục</ContinueText>
-            </ContinueButton>
+            <ContinueButton 
+                onPress={() => router.push("/tourcreate/tour2")} 
+                disabled={!(destination && travelType)}
+                text={"Tiếp tục"}
+            />
         </Container>
     )
 }
