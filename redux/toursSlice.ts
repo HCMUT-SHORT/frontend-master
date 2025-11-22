@@ -1,4 +1,4 @@
-import type { PlaceToVisit, TourState } from "@/constants/type";
+import type { PlaceToStay, PlaceToVisit, TourState } from "@/constants/type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: TourState[] = [];
@@ -37,9 +37,34 @@ const ToursSlice = createSlice({
             } else {
                 selected.changedPlaces[action.payload.placeId] = dayVisit;
             }
+        },
+        addPlacesToStay: (state, action: PayloadAction<{ tourId: string; places: PlaceToStay[]}>) => {
+            const selected = state.find(t => t.id === action.payload.tourId);
+            if (selected) {
+                selected.placesToStay = action.payload.places.map((place) => ({
+                    ...place,
+                    originalSelected: place.isSelected
+                }));
+                selected.changedPlacesStay = {};
+            }
+        },
+        togglePlaceToStay: (state, action: PayloadAction<{ tourId: string; placeId: string; }>) => {
+            const selected = state.find(t => t.id === action.payload.tourId);
+            if (!selected) return;
+
+            const place = selected.placesToStay.find(p => p.id === action.payload.placeId);
+            if (!place) return;
+
+            place.isSelected = !place.isSelected;
+            
+            if (place.isSelected !== place.originalSelected) {
+                selected.changedPlacesStay[action.payload.placeId] = place.isSelected;
+            } else {
+                delete selected.changedPlacesStay[place.id];
+            }
         }
     }
 });
 
-export const { addTour, addPlacesToVisit, togglePlaceDayVisit } = ToursSlice.actions;
+export const { addTour, addPlacesToVisit, togglePlaceDayVisit, addPlacesToStay, togglePlaceToStay } = ToursSlice.actions;
 export default ToursSlice.reducer;

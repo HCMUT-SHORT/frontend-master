@@ -10,6 +10,19 @@ export interface PlaceToVisit {
     totalRating: number;
 };
 
+export interface PlaceToStay {
+    id: string;
+    name: string;
+    detail: string;
+    imageUrl: string;
+    bookingUrl: string;
+    price: number;
+    rating: number;
+    totalRating: number;
+    isSelected: boolean;
+    originalSelected: boolean;
+}
+
 export interface TourState {
     id: string | null;
     createdAt: string | null;
@@ -23,4 +36,6 @@ export interface TourState {
     imageUrl: string | null;
     placesToVisit: PlaceToVisit[];
     changedPlaces: Record<string, number[]>;
+    placesToStay: PlaceToStay[];
+    changedPlacesStay: Record<string, boolean>;
 };

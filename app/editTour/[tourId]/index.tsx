@@ -2,12 +2,13 @@ import { axiosClient } from "@/api/axiosClient";
 import { AccordionItem } from "@/components/AccordionItem";
 import { ContinueButton } from "@/components/ContinueButton";
 import { COLORS } from "@/constants/Colors";
-import { RootState } from "@/redux/store";
+import { AppDispatch, RootState } from "@/redux/store";
+import { addPlacesToStay } from "@/redux/toursSlice";
 import { stringifyDays } from "@/utility/stringConverter";
 import { formatDateDMY } from "@/utility/timeConverter";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 
 const Container =styled.View`
@@ -32,6 +33,7 @@ export default function TourEdit() {
     const selectedTour = useSelector((state: RootState) => state.tours.find(t => t.id === tourId));
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const dispatch = useDispatch<AppDispatch>();
 
     if (!selectedTour) {
         return <></>
@@ -53,6 +55,26 @@ export default function TourEdit() {
         }
     }
 
+    const fetchPlacesToStay = async () => {
+        if (!tourId) return;
+        const tourIdStr = Array.isArray(tourId) ? tourId[0] : tourId;
+        if (selectedTour?.placesToStay && selectedTour.placesToStay.length > 0) return;
+
+        try {
+            const response = await axiosClient.get(`/tour/placestostay/${tourId}`);
+            const sortedPlaces = response.data.sort((a: any, b: any) => {
+                if (b.rating !== a.rating) {
+                    return b.rating - a.rating;
+                } else {
+                    return b.totalRating - a.totalRating;
+                }
+            });
+            dispatch(addPlacesToStay({ tourId: tourIdStr, places: sortedPlaces }));
+        } catch(error: any) {
+            console.log("There is an error fetching places to stay:", error.message);
+        }
+    }
+
     const handleUpdatePlacesToVisit = async () => {
         if (loading) return;
             
@@ -67,6 +89,7 @@ export default function TourEdit() {
             );
 
             await axiosClient.put("/tour/placestovisit", updateItems);
+            await fetchPlacesToStay();
             router.push(`/editTour/${tourId}/placesToStay`);
         } catch (error: any) {
             console.log("There is an error updating places to visit:", error.message);
