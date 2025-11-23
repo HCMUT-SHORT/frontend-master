@@ -77,17 +77,23 @@ export default function TourEdit() {
 
     const handleUpdatePlacesToVisit = async () => {
         if (loading) return;
-            
+
+        const updateItems = Object.entries(
+            selectedTour.changedPlaces).map(([placeId, days]) => ({
+                id: placeId,
+                dayVisit: stringifyDays(days)
+            })
+        );
+
         try {
             setLoading(true);
 
-            const updateItems = Object.entries(
-                selectedTour.changedPlaces).map(([placeId, days]) => ({
-                    id: placeId,
-                    dayVisit: stringifyDays(days)
-                })
-            );
-
+            if (updateItems.length === 0) {
+                await fetchPlacesToStay();
+                router.push(`/editTour/${tourId}/placesToStay`);
+                return;
+            }
+                
             await axiosClient.put("/tour/placestovisit", updateItems);
             await fetchPlacesToStay();
             router.push(`/editTour/${tourId}/placesToStay`);

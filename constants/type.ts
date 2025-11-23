@@ -21,7 +21,18 @@ export interface PlaceToStay {
     totalRating: number;
     isSelected: boolean;
     originalSelected: boolean;
-}
+};
+
+export interface Transportation {
+    id: string;
+    type: "flight" | "train" | "self-drive" | "bus";
+    time: string;
+    bookingUrl: string;
+    price: number;
+    isSelected: boolean;
+    isPossible: boolean;
+    originalSelected: boolean;
+};
 
 export interface TourState {
     id: string | null;
@@ -38,4 +49,6 @@ export interface TourState {
     changedPlaces: Record<string, number[]>;
     placesToStay: PlaceToStay[];
     changedPlacesStay: Record<string, boolean>;
+    transportations: Transportation[];
+    changedTransportations: Record<string, boolean>;
 };

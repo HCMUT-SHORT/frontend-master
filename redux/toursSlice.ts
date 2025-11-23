@@ -1,4 +1,4 @@
-import type { PlaceToStay, PlaceToVisit, TourState } from "@/constants/type";
+import type { PlaceToStay, PlaceToVisit, TourState, Transportation } from "@/constants/type";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: TourState[] = [];
@@ -60,11 +60,41 @@ const ToursSlice = createSlice({
             if (place.isSelected !== place.originalSelected) {
                 selected.changedPlacesStay[action.payload.placeId] = place.isSelected;
             } else {
-                delete selected.changedPlacesStay[place.id];
+                delete selected.changedPlacesStay[action.payload.placeId];
             }
+        },
+        addTransportations: (state, action: PayloadAction<{ tourId: string; transportations: Transportation[]; }>) => {
+            const selected = state.find(t => t.id === action.payload.tourId);
+            if (selected) {
+                selected.transportations = action.payload.transportations.map((transport) => ({
+                    ...transport,
+                    originalSelected: transport.isSelected
+                }));
+                selected.changedTransportations = {};
+            }
+        },
+        toggleTransportation: (state, action: PayloadAction<{ tourId: string; transportId: string}>) => {
+            const selected = state.find(t => t.id === action.payload.tourId);
+            if (!selected) return;
+
+            const clickedId = action.payload.transportId;
+
+            selected.transportations.forEach(t => {
+                const newSelectedState = t.id === clickedId;
+            
+                if (t.isSelected !== newSelectedState) {
+                    t.isSelected = newSelectedState;
+    
+                    if (t.isSelected !== t.originalSelected) {
+                        selected.changedTransportations[t.id] = t.isSelected;
+                    } else {
+                        delete selected.changedTransportations[t.id];
+                    }
+                }
+            });
         }
     }
 });
 
-export const { addTour, addPlacesToVisit, togglePlaceDayVisit, addPlacesToStay, togglePlaceToStay } = ToursSlice.actions;
+export const { addTour, addPlacesToVisit, togglePlaceDayVisit, addPlacesToStay, togglePlaceToStay, addTransportations, toggleTransportation } = ToursSlice.actions;
 export default ToursSlice.reducer;

@@ -3,7 +3,7 @@ import { ContinueButton } from "@/components/ContinueButton";
 import { PlaceToStayCard } from "@/components/PlaceToStayCard";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
-import { togglePlaceToStay } from "@/redux/toursSlice";
+import { addTransportations, togglePlaceToStay } from "@/redux/toursSlice";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,20 +38,37 @@ export default function PlacesToStay() {
         )
     }
 
+    const fetchTransportations = async () => {
+        if (!tourId) return;
+        const tourIdStr = Array.isArray(tourId) ? tourId[0] : tourId;
+        if (selectedTour?.transportations && selectedTour.transportations.length > 0) return;
+
+        try {
+            const response = await axiosClient.get(`/tour/transportation/${tourIdStr}`);
+            dispatch(addTransportations({ tourId: tourIdStr, transportations: response.data }));
+        } catch(error: any) {
+            console.log("There is an error fetching transportations: ", error.message);
+        } 
+    }
+
     const handleUpdatePlacesToStay = async () => {
         if (loading) return;
+
+        const updateItems = Object.entries(selectedTour.changedPlacesStay).map(
+            ([id, isSelected]) => ({ id, isSelected })
+        );
 
         try {
             setLoading(true);
 
-            const updateItems = Object.entries(selectedTour.changedPlacesStay).map(
-                ([id, isSelected]) => ({
-                    id,
-                    isSelected
-                })
-            );
-            
+            if (updateItems.length === 0) {
+                await fetchTransportations();
+                router.push(`/editTour/${tourId}/transportation`);
+                return;
+            }    
+
             await axiosClient.put("/tour/placestostay", updateItems);
+            await fetchTransportations();
             router.push(`/editTour/${tourId}/transportation`);
         } catch(error: any) {
             console.log("There is an error updating place to stay:", error.message);
