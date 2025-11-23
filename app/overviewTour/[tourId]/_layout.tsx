@@ -1,6 +1,6 @@
 import { COLORS } from "@/constants/Colors";
 import Entypo from '@expo/vector-icons/Entypo';
-import { Slot, useLocalSearchParams, useRouter } from "expo-router";
+import { Slot, useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styled from "styled-components/native";
 
@@ -14,7 +14,6 @@ const ReturnButton = styled.TouchableOpacity`
 
 export default function TourOverviewLayout() {
     const router = useRouter();
-    const { tourId } = useLocalSearchParams();
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTYELLOW }}>

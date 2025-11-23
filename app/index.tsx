@@ -1,5 +1,6 @@
 import { axiosClient } from "@/api/axiosClient";
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { COLORS } from "@/constants/Colors";
 import { AppDispatch } from "@/redux/store";
 import { setUser } from "@/redux/userSlice";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -52,5 +53,5 @@ export default function AppIndex() {
         routeFinding();
     }, [router, dispatch]);
 
-    return <LoadingScreen/>
+    return <LoadingScreen bgColor={COLORS.LIGHTGREEN}/>
 }

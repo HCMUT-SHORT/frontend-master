@@ -1,12 +1,15 @@
-import { COLORS } from "@/constants/Colors";
 import styled from "styled-components/native";
 
-const Container = styled.View`
+type ContainerType = {
+    bgColor: string;
+}
+
+const Container = styled.View<{ bgColor: string }>`
     display: flex;
     justify-content: center;
     align-items: center;
     flex: 1;
-    background-color: ${COLORS.LIGHTGREEN};
+    background-color: ${(props : ContainerType) => props.bgColor};
 `;
 
 const Logo = styled.Image`
@@ -14,9 +17,13 @@ const Logo = styled.Image`
     height: 200px;
 `;
 
-export function LoadingScreen() {
+type LoadingScreenProps = {
+    bgColor: string;
+}
+
+export function LoadingScreen({ bgColor }: LoadingScreenProps) {
     return (
-        <Container>
+        <Container bgColor={bgColor}>
             <Logo source={require("../assets/images/travel.gif")}/>
         </Container>
     );

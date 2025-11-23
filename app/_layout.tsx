@@ -1,4 +1,5 @@
 import { LoadingScreen } from "@/components/LoadingScreen";
+import { COLORS } from "@/constants/Colors";
 import { store } from "@/redux/store";
 import { Asset } from "expo-asset";
 import { useFonts } from "expo-font";
@@ -29,7 +30,7 @@ export default function RootLayout() {
 		preloadAsset();
 	}, [])
 
-	if (!loaded || !assetsLoaded) return <LoadingScreen />;
+	if (!loaded || !assetsLoaded) return <LoadingScreen bgColor={COLORS.LIGHTGREEN}/>;
 
 	return (
 		<Provider store={store}>
