@@ -102,13 +102,15 @@ export function TransportCard({ transport, onPress } : TransportCardProps) {
             <DetailWrapper>
                 <HeaderWrapper>
                     <TransportType>{transportType}</TransportType>
-                    <TransportButton onPress={onPress}>
-                        {transport.isSelected ? (
-                            <Feather name="check" size={20} color={COLORS.DARKGREEN} />
-                        ) : (
-                            <AntDesign name="plus-circle" size={18} color="black" />
-                        )}
-                    </TransportButton>
+                    {transport.isPossible && (
+                        <TransportButton onPress={onPress}>
+                            {transport.isSelected ? (
+                                <Feather name="check" size={20} color={COLORS.DARKGREEN} />
+                            ) : (
+                                <AntDesign name="plus-circle" size={18} color="black" />
+                            )}
+                        </TransportButton>
+                    )}
                 </HeaderWrapper>
 
                 <TransportDetail>{transport.time}</TransportDetail>

@@ -76,11 +76,32 @@ export default function TourOverView() {
     const checkInDateFormated = selectedTour.checkInDate ? formatDateDMY(selectedTour.checkInDate) : "";
     const checkOutDateFormated = selectedTour.checkOutDate ? formatDateDMY(selectedTour.checkOutDate) : "";
 
+    const transport = selectedTour.transportations?.find(t => t.isSelected) ?? null;
+    const transportType = 
+        transport?.type === "flight" ? "Máy bay" : 
+        transport?.type === "train" ? "Tàu lửa" :
+        transport?.type === "bus" ? "Xe khách" : 
+        transport?.type === "self-drive" ? "Tự lái" : "Chưa chọn";
+
+    const totalPlacesToVisitCost = (selectedTour.placesToVisit ?? []).reduce((sum, place) => {
+        const days = selectedTour.changedPlaces[place.id] ?? place.dayVisit;
+        return sum + place.price * days.length;
+    }, 0);
+    
+    const totalPlacesToStayCost = (selectedTour.placesToStay ?? []).reduce((sum, place) => {
+        if (place.isSelected) return sum + place.price;
+        return sum;
+    }, 0);
+
+    const transportCost = transport?.price ?? 0;
+
+    const totalCost = totalPlacesToVisitCost + totalPlacesToStayCost * 2 + transportCost;
+
     const Items: ItemDescription[] = [
         {text: "Điểm đến", value: selectedTour.destination, icon: <EvilIcons name="location" size={24} color="black" />},
         {text: "Thời gian", value: `${checkInDateFormated} - ${checkOutDateFormated}`, icon: <FontAwesome name="calendar" size={24} color="black" />},
-        {text: "Dự trù kinh phí chuyến đi", value: "123", icon: <FontAwesome name="money" size={24} color="black" />},
-        {text: "Phương tiện di chuyển", value: "123", icon: <SimpleLineIcons name="plane" size={24} color="black" />}
+        {text: "Dự trù kinh phí chuyến đi", value: `${totalCost.toLocaleString("en-US")} đồng`, icon: <FontAwesome name="money" size={24} color="black" />},
+        {text: "Phương tiện di chuyển", value: transportType, icon: <SimpleLineIcons name="plane" size={24} color="black" />}
     ];
 
     return (

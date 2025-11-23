@@ -32,7 +32,7 @@ const ToursSlice = createSlice({
                 dayVisit.push(action.payload.day);
             }
 
-            if (dayVisit.length === 0 || dayVisit.join(",") === place.dayVisit.join(",")) {
+            if (dayVisit.length === place.dayVisit.length && dayVisit.every(d => place.dayVisit.includes(d))) {
                 delete selected.changedPlaces[action.payload.placeId];
             } else {
                 selected.changedPlaces[action.payload.placeId] = dayVisit;

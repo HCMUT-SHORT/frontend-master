@@ -114,7 +114,7 @@ export function PlacesToVisitCollapsible({ index, selectedTour } : PlacesToVisit
 
                             <PlaceDetail>{place.detail}</PlaceDetail>
                             <PlaceBestTimeToVisit>Thời gian tham quan: {place.bestTimeToVisit}</PlaceBestTimeToVisit>
-                            <PlacePrice>Giá vé: {place.price} đồng</PlacePrice>
+                            <PlacePrice>Giá vé: {place.price.toLocaleString("en-US")} đồng</PlacePrice>
                         </DetailWrapper>
                     </PlaceContainer>
                 );
