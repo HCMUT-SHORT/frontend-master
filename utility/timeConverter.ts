@@ -16,9 +16,7 @@ export function formatDateDMY(dateString: string): string {
     return `${day}/${month}/${year}`;
 }
 
-export const getNights = (checkIn: string | null, checkOut: string | null) => {
-    if (!checkIn || !checkOut) return 0;
-
+export const getNights = (checkIn: string, checkOut: string) => {
     const inDate = new Date(checkIn);
     const outDate = new Date(checkOut);
 

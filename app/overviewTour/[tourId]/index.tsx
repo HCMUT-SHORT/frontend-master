@@ -1,3 +1,4 @@
+import { AccordionItem } from "@/components/AccordionItem";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { SkeletonImage } from "@/components/SkeletonImage";
 import { TextTourDescription } from "@/components/TextTourDescription";
@@ -15,7 +16,7 @@ import styled from "styled-components/native";
 
 const Container = styled.ScrollView`
     flex: 1;
-    background-color: ${COLORS.LIGHTYELLOW};
+    background-color: ${COLORS.LIGHTGREEN};
     padding: 24px;
 `;
 
@@ -35,6 +36,17 @@ const DescriptionContainer = styled.View`
     row-gap: 15px;
 `;
 
+const PlanText = styled.Text`
+    font-family: "Nunito-Medium";
+    font-size: 16px;  
+    margin-top: 10px;
+    margin-bottom: 10px;
+`;
+
+const AccordionItemWrapper = styled.View`
+    row-gap: 15px;
+`;
+
  type ItemDescription = {
     text: string,
     value: string | null | undefined,
@@ -47,6 +59,7 @@ export default function TourOverView() {
     const selectedTour = useSelector((state: RootState) => state.tours.find(t => t.id === tourId));
     const dispatch = useDispatch<AppDispatch>();
     const [loading, setLoading] = useState<boolean>(false);
+    const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const handleLoadTourData = async () => {
@@ -69,7 +82,7 @@ export default function TourOverView() {
 
     if (loading) {
         return (
-            <LoadingScreen bgColor={COLORS.LIGHTYELLOW}/>
+            <LoadingScreen bgColor={COLORS.LIGHTGREEN}/>
         )
     }
 
@@ -88,8 +101,8 @@ export default function TourOverView() {
         return sum + place.price * days.length;
     }, 0);
     
-    const nights = getNights(selectedTour.checkInDate, selectedTour.checkOutDate);
-    const selectedPlaces = selectedTour.placesToStay.filter(p => p.isSelected);
+    const nights = selectedTour.checkInDate && selectedTour.checkOutDate ? getNights(selectedTour.checkInDate, selectedTour.checkOutDate) : 0;
+    const selectedPlaces = selectedTour.placesToStay?.filter(p => p.isSelected) ?? [];
     const baseStayCost = selectedPlaces.reduce((sum, place) => sum + place.price, 0);
 
     let totalPlacesToStayCost = 0;
@@ -105,10 +118,23 @@ export default function TourOverView() {
 
     const Items: ItemDescription[] = [
         {text: "Điểm đến", value: selectedTour.destination, icon: <EvilIcons name="location" size={24} color="black" />},
-        {text: "Thời gian", value: `${checkInDateFormated} - ${checkOutDateFormated}`, icon: <FontAwesome name="calendar" size={24} color="black" />},
+        {text: "Thời gian", value: `${checkInDateFormated} - ${checkOutDateFormated} (${nights} ngày)`, icon: <FontAwesome name="calendar" size={24} color="black" />},
         {text: "Dự trù kinh phí chuyến đi", value: `${totalCost.toLocaleString("en-US")} đồng`, icon: <FontAwesome name="money" size={24} color="black" />},
         {text: "Phương tiện di chuyển", value: transportType, icon: <SimpleLineIcons name="plane" size={24} color="black" />}
     ];
+
+    const dates: string[] = [];
+
+    if (selectedTour.checkInDate && selectedTour.checkOutDate) {
+        let current = new Date(selectedTour.checkInDate);
+        const end = new Date(selectedTour.checkOutDate);
+    
+        while (current <= end) {
+            const currentStr = current.toISOString().split("T")[0];
+            dates.push(formatDateDMY(currentStr));
+            current.setDate(current.getDate() + 1); 
+        }
+    }
 
     return (
         <Container>
@@ -127,6 +153,22 @@ export default function TourOverView() {
                     <TextTourDescription key={index} text={item.text} value={item.value} icon={item.icon}/>
                 )}
             </DescriptionContainer>
+
+            <PlanText>Lịch trình</PlanText>
+
+            <AccordionItemWrapper>
+                {dates.map((date, index) => (
+                    <AccordionItem 
+                        key={index} 
+                        index={index + 1} 
+                        date={date}
+                        isExpanded={index === expandedIndex}
+                        toggleAccordion={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                        selectedTour={selectedTour}
+                        type={"display"}
+                    />
+                ))}
+            </AccordionItemWrapper>
         </Container>
     )
 }

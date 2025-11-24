@@ -42,9 +42,10 @@ type AccordionItemProps = {
     isExpanded: boolean;
     toggleAccordion: (value: boolean | null) => void;
     selectedTour: TourState;
+    type: "display" | "edit";
 }
 
-export function AccordionItem({ index, date, isExpanded, toggleAccordion, selectedTour } : AccordionItemProps) {
+export function AccordionItem({ index, date, isExpanded, toggleAccordion, selectedTour, type } : AccordionItemProps) {
     const rotation = useSharedValue(isExpanded ? 90 : 0);
 
     useEffect(() => {
@@ -73,7 +74,9 @@ export function AccordionItem({ index, date, isExpanded, toggleAccordion, select
 
             <Collapsible collapsed={!isExpanded}>
                 <View>
-                    <PlacesToVisitCollapsible index={index} selectedTour={selectedTour}/>
+                    {selectedTour.placesToVisit?.length > 0 && (
+                        <PlacesToVisitCollapsible index={index} selectedTour={selectedTour} type={type} />
+                    )}
                 </View>
             </Collapsible>
         </Container>

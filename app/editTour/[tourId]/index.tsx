@@ -97,6 +97,7 @@ export default function TourEdit() {
                         isExpanded={index === expandedIndex}
                         toggleAccordion={() => setExpandedIndex(expandedIndex === index ? null : index)}
                         selectedTour={selectedTour}
+                        type={"edit"}
                     />
                 ))}
             </AccordionItemWrapper>

@@ -72,53 +72,65 @@ const PlacePrice = styled.Text`
 type PlacesToVisitCollapsibleProps = {
     index: number;
     selectedTour: TourState;
+    type: "display" | "edit";
 }
 
-export function PlacesToVisitCollapsible({ index, selectedTour } : PlacesToVisitCollapsibleProps) {
+export function PlacesToVisitCollapsible({ index, selectedTour, type } : PlacesToVisitCollapsibleProps) {
     const dispatch = useDispatch<AppDispatch>();
 
     return (
         <Container contentContainerStyle={{ gap: 15 }}>
-            {selectedTour.placesToVisit.map((place) => {
-                const dayVisit = selectedTour.changedPlaces[place.id] ?? place.dayVisit;
+            {selectedTour.placesToVisit
+                .filter(place => {
+                    if (type === "display") {
+                        const dayVisit = selectedTour.changedPlaces[place.id] ?? place.dayVisit;
+                        return dayVisit.includes(index);
+                    }
+                    return true;
+                })
+                .map((place) => {
+                    const dayVisit = selectedTour.changedPlaces[place.id] ?? place.dayVisit;
 
-                return (
-                    <PlaceContainer key={place.id}>
-                        <SkeletonImage uri={place.imageUrl || ""} height={200}/>
+                    return (
+                        <PlaceContainer key={place.id}>
+                            <SkeletonImage uri={place.imageUrl || ""} height={200}/>
 
-                        <DetailWrapper>
-                            <HeaderContainer>
-                                <PlaceName>{place.name}</PlaceName>
-                                <PlaceButton 
-                                    onPress={() => 
-                                        dispatch(togglePlaceDayVisit({ 
-                                            tourId: selectedTour.id || "", 
-                                            placeId: place.id, 
-                                            day: index 
-                                        }))
-                                    }
-                                >
-                                    {dayVisit.includes(index) ? (
-                                        <Feather name="check" size={20} color={COLORS.DARKGREEN} />
-                                    ) : (
-                                        <AntDesign name="plus-circle" size={18} color="black" />
+                            <DetailWrapper>
+                                <HeaderContainer>
+                                    <PlaceName>{place.name}</PlaceName>
+                                    {type !== "display" && (
+                                        <PlaceButton 
+                                            onPress={() => 
+                                                dispatch(togglePlaceDayVisit({ 
+                                                    tourId: selectedTour.id || "", 
+                                                    placeId: place.id, 
+                                                    day: index 
+                                                }))
+                                            }
+                                        >
+                                            {dayVisit.includes(index) ? (
+                                                <Feather name="check" size={20} color={COLORS.DARKGREEN} />
+                                            ) : (
+                                                <AntDesign name="plus-circle" size={18} color="black" />
+                                            )}
+                                        </PlaceButton>
                                     )}
-                                </PlaceButton>
-                            </HeaderContainer>
+                                </HeaderContainer>
 
-                            <RatingContainer> 
-                                <RatingScore>{place.rating}</RatingScore>
-                                <StarRender rating={place.rating}/>
-                                <RatingScore>({place.totalRating} lượt đánh giá)</RatingScore>
-                            </RatingContainer>
+                                <RatingContainer> 
+                                    <RatingScore>{place.rating}</RatingScore>
+                                    <StarRender rating={place.rating}/>
+                                    <RatingScore>({place.totalRating} lượt đánh giá)</RatingScore>
+                                </RatingContainer>
 
-                            <PlaceDetail>{place.detail}</PlaceDetail>
-                            <PlaceBestTimeToVisit>Thời gian tham quan: {place.bestTimeToVisit}</PlaceBestTimeToVisit>
-                            <PlacePrice>Giá vé: {place.price.toLocaleString("en-US")} đồng</PlacePrice>
-                        </DetailWrapper>
-                    </PlaceContainer>
-                );
-            })}
+                                <PlaceDetail>{place.detail}</PlaceDetail>
+                                <PlaceBestTimeToVisit>Thời gian tham quan: {place.bestTimeToVisit}</PlaceBestTimeToVisit>
+                                <PlacePrice>Giá vé: {place.price.toLocaleString("en-US")} đồng</PlacePrice>
+                            </DetailWrapper>
+                        </PlaceContainer>
+                    );
+                })
+            }
         </Container>
     )
 }

@@ -88,6 +88,7 @@ export default function TourCreate2() {
     const maxBudget = useSelector((state: RootState) => state.tourCreate.MaxBudget);
     const dispatch = useDispatch<AppDispatch>();
     const [errorText, setErrorText] = useState<string>("");
+    const today = new Date().toISOString().split("T")[0];
 
     const handleDayPress = (date: DateData) => {
         if (!checkInDate) {
@@ -129,18 +130,18 @@ export default function TourCreate2() {
     }, [errorText])
 
     const getMarkedDates = () : MarkedDates => {
-        if (!checkInDate) return {};
-
-        let marked: MarkedDates = {
-            [checkInDate]: {
-                startingDay: true,
-                color: COLORS.DARKGREEN,
-                textColor: COLORS.YELLOW
+        const marked: MarkedDates = {
+            [today]: {
+                textColor: COLORS.DARKGREEN,
             }
+        };
+    
+        if (checkInDate) {
+            marked[checkInDate] = { ...marked[checkInDate], startingDay: true, color: COLORS.DARKGREEN, textColor: COLORS.YELLOW };
         }
 
         if (checkOutDate) {
-            const startDate = new Date(checkInDate);
+            const startDate = new Date(checkInDate!);
             const endDate = new Date(checkOutDate);
 
             let current = new Date(startDate);
@@ -176,6 +177,7 @@ export default function TourCreate2() {
                 enableSwipeMonths={true}
                 onDayPress={(date: DateData) => handleDayPress(date)}
                 markedDates={getMarkedDates()}
+                minDate={today}
                 theme={{
                     textDayFontFamily: "Nunito-Regular",
                     textDayHeaderFontFamily: "Nunito-Regular",

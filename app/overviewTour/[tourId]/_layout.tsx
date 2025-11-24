@@ -16,7 +16,7 @@ export default function TourOverviewLayout() {
     const router = useRouter();
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTYELLOW }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTGREEN }}>
             <ReturnButton onPress={() => router.replace('/home')}>
                 <Entypo name="chevron-thin-left" size={20} color="black" />
             </ReturnButton>
