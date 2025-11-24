@@ -48,13 +48,31 @@ const ToursSlice = createSlice({
                 selected.changedPlacesStay = {};
             }
         },
-        togglePlaceToStay: (state, action: PayloadAction<{ tourId: string; placeId: string; }>) => {
+        togglePlaceToStay: (state, action: PayloadAction<{ tourId: string; placeId: string; checkInDate: string; checkOutDate: string }>) => {
             const selected = state.find(t => t.id === action.payload.tourId);
             if (!selected) return;
 
             const place = selected.placesToStay.find(p => p.id === action.payload.placeId);
             if (!place) return;
 
+            const nights = Math.max(1,
+                Math.ceil(
+                    (new Date(action.payload.checkOutDate).getTime() -
+                     new Date(action.payload.checkInDate).getTime()) /
+                    (1000 * 60 * 60 * 24)
+                )
+            );
+
+            const selectedCount = selected.placesToStay.filter(p => p.isSelected).length;
+            const isSelecting = !place.isSelected;
+
+            if (isSelecting && selectedCount >= nights) {
+                selected.placeToStayError = `Bạn chỉ được chọn ${nights} chỗ ở cho ${nights} đêm.`;
+                return;
+            }
+        
+            selected.placeToStayError = null;
+            
             place.isSelected = !place.isSelected;
             
             if (place.isSelected !== place.originalSelected) {
@@ -62,6 +80,11 @@ const ToursSlice = createSlice({
             } else {
                 delete selected.changedPlacesStay[action.payload.placeId];
             }
+        },
+        clearPlaceToStayError: (state, action: PayloadAction<{ tourId: string }>) => {
+            const selectedTour = state.find(t => t.id === action.payload.tourId);
+            if (!selectedTour) return;
+            selectedTour.placeToStayError = "";
         },
         addTransportations: (state, action: PayloadAction<{ tourId: string; transportations: Transportation[]; }>) => {
             const selected = state.find(t => t.id === action.payload.tourId);
@@ -96,5 +119,5 @@ const ToursSlice = createSlice({
     }
 });
 
-export const { addTour, addPlacesToVisit, togglePlaceDayVisit, addPlacesToStay, togglePlaceToStay, addTransportations, toggleTransportation } = ToursSlice.actions;
+export const { addTour, addPlacesToVisit, togglePlaceDayVisit, addPlacesToStay, togglePlaceToStay, clearPlaceToStayError, addTransportations, toggleTransportation } = ToursSlice.actions;
 export default ToursSlice.reducer;

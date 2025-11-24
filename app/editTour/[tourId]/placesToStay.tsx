@@ -4,9 +4,9 @@ import { PlaceToStayCard } from "@/components/PlaceToStayCard";
 import { COLORS } from "@/constants/Colors";
 import { fetchTransportations } from "@/hooks/fetchTourData";
 import { AppDispatch, RootState } from "@/redux/store";
-import { togglePlaceToStay } from "@/redux/toursSlice";
+import { clearPlaceToStayError, togglePlaceToStay } from "@/redux/toursSlice";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 
@@ -19,11 +19,17 @@ const Container = styled.View`
 const TextDisplay = styled.Text`
     font-family: "Nunito-Regular";
     font-size: 20px;
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 `;
 
 const PlacesContainer = styled.ScrollView`
     margin-top: 15px;
+`;
+
+const ErrorDisplay = styled.Text`
+    font-family: "Nunito-Regular";
+    font-size: 14px;
+    color: ${COLORS.RED};
 `;
 
 export default function PlacesToStay() {
@@ -32,6 +38,16 @@ export default function PlacesToStay() {
     const selectedTour = useSelector((state: RootState) => state.tours.find(t => t.id === tourId));
     const dispatch = useDispatch<AppDispatch>();
     const [loading, setLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (selectedTour?.placeToStayError) {
+            const timer = setTimeout(() => {
+                dispatch(clearPlaceToStayError({ tourId: selectedTour.id || "" }));
+            }, 3000);
+    
+            return () => clearTimeout(timer);
+        }
+    }, [selectedTour?.placeToStayError, dispatch, selectedTour?.id]);
 
     if (!selectedTour) {
         return (
@@ -69,12 +85,23 @@ export default function PlacesToStay() {
         <Container>
             <TextDisplay>Hãy chọn khách sạn phù hợp nhé!</TextDisplay>
 
+            {selectedTour.placeToStayError && (
+                <ErrorDisplay>{selectedTour.placeToStayError}</ErrorDisplay>
+            )}
+
             <PlacesContainer contentContainerStyle={{ gap: 15 }}>
                 {selectedTour.placesToStay.map((place) => (
                     <PlaceToStayCard 
                         key={place.id} 
                         place={place} 
-                        onPress={() => dispatch(togglePlaceToStay({ tourId: selectedTour.id || "", placeId: place.id }))}
+                        onPress={() => 
+                            dispatch(togglePlaceToStay({ 
+                                tourId: selectedTour.id || "", 
+                                placeId: place.id, 
+                                checkInDate: selectedTour.checkInDate || "", 
+                                checkOutDate: selectedTour.checkOutDate || ""
+                            }))
+                        }
                     />
                 ))}
             </PlacesContainer>

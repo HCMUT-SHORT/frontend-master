@@ -49,6 +49,7 @@ export interface TourState {
     changedPlaces: Record<string, number[]>;
     placesToStay: PlaceToStay[];
     changedPlacesStay: Record<string, boolean>;
+    placeToStayError: string | null;
     transportations: Transportation[];
     changedTransportations: Record<string, boolean>;
 };

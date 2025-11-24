@@ -4,7 +4,7 @@ import { TextTourDescription } from "@/components/TextTourDescription";
 import { COLORS } from "@/constants/Colors";
 import { fetchPlacesToStay, fetchPlacesToVisit, fetchTransportations } from "@/hooks/fetchTourData";
 import { AppDispatch, RootState } from "@/redux/store";
-import { formatDateDMY } from "@/utility/timeConverter";
+import { formatDateDMY, getNights } from "@/utility/timeConverter";
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import SimpleLineIcons from '@expo/vector-icons/SimpleLineIcons';
@@ -88,14 +88,20 @@ export default function TourOverView() {
         return sum + place.price * days.length;
     }, 0);
     
-    const totalPlacesToStayCost = (selectedTour.placesToStay ?? []).reduce((sum, place) => {
-        if (place.isSelected) return sum + place.price;
-        return sum;
-    }, 0);
+    const nights = getNights(selectedTour.checkInDate, selectedTour.checkOutDate);
+    const selectedPlaces = selectedTour.placesToStay.filter(p => p.isSelected);
+    const baseStayCost = selectedPlaces.reduce((sum, place) => sum + place.price, 0);
+
+    let totalPlacesToStayCost = 0;
+    if (selectedPlaces.length === 1) {
+        totalPlacesToStayCost = selectedPlaces[0].price * nights;
+    } else {
+        totalPlacesToStayCost = baseStayCost;
+    }
 
     const transportCost = transport?.price ?? 0;
 
-    const totalCost = totalPlacesToVisitCost + totalPlacesToStayCost * 2 + transportCost;
+    const totalCost = totalPlacesToVisitCost + totalPlacesToStayCost + transportCost;
 
     const Items: ItemDescription[] = [
         {text: "Điểm đến", value: selectedTour.destination, icon: <EvilIcons name="location" size={24} color="black" />},
