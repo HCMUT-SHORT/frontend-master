@@ -78,8 +78,10 @@
     },
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "app/onboarding/**/*.{ts,tsx}",
-      "app/home/**/*.{ts,tsx}",
+      "app/onboarding/**/index.tsx",
+      "app/home/**/index.tsx",
+      "app/home/**/create.tsx",
+      "app/home/**/tours.tsx",
       "!**/coverage/**",
       "!**/node_modules/**",
       "!**/.expo/**"
