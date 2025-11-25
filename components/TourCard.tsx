@@ -37,11 +37,11 @@ export function TourCard ({ tourId, destination, checkInDate, checkOutDate, imag
     const checkOutDateFormated = checkOutDate ? formatDateDMY(checkOutDate) : "";
 
     return (
-        <Container>
+        <Container testID={`tourcard-${destination}`}>
             <TouchableOpacity activeOpacity={1} onPress={() => router.replace(`/overviewTour/${tourId}`)}>  
                 <SkeletonImage uri={imageUrl || ""} height={268}/>
             </TouchableOpacity>
-            <DestinationText>{destination}</DestinationText>
+            <DestinationText testID={"tour-destination"}>{destination}</DestinationText>
             <TourCreatedDate>{checkInDateFormated} - {checkOutDateFormated}</TourCreatedDate>
         </Container>
     )

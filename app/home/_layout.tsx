@@ -50,7 +50,13 @@ export default function HomeLayout() {
                             maxBudget: tour.maxBudget.toString(),
                             travelType: tour.travelType,
                             imageUrl: tour.imageUrl,
-                            placesToVisit: []
+                            placesToVisit: [],
+                            placesToStay: [],
+                            transportations: [],
+                            changedPlaces: {},
+                            changedPlacesStay: {},
+                            changedTransportations: {},
+                            placeToStayError: "",
                         }));
                     }
                 })

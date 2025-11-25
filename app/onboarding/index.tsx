@@ -157,7 +157,7 @@ export default function Onboarding() {
 
             <ButtonContainer>
                 <SkipButton onPress={handleSkip}><SkipText>Bỏ qua</SkipText></SkipButton>
-                <NextButton onPress={handleNext}><AntDesign name="right" size={24} color="white"/></NextButton>
+                <NextButton testID={"next-button"} onPress={handleNext}><AntDesign name="right" size={24} color="white"/></NextButton>
             </ButtonContainer>
         </Container>
     )

@@ -8,7 +8,7 @@ const Container = styled.View`
 
 export default function Tours() {
     return (
-        <Container>
+        <Container testID="tours-container">
             
         </Container>
     )
