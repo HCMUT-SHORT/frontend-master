@@ -108,4 +108,18 @@ describe("Onboarding", () => {
             expect(mockRouter.replace).not.toHaveBeenCalled();
         })
     });
+
+    it("Onboarding - Next Button 3 time", async () => {
+        const { getByTestId } = render(<Onboarding/>);
+        const nextButton = getByTestId("next-button");
+
+        fireEvent.press(nextButton);
+        fireEvent.press(nextButton);
+        fireEvent.press(nextButton);
+
+        await waitFor(() => {
+            expect(AsyncStorage.setItem).toHaveBeenCalledWith('hasOnboarded', 'true');
+            expect(mockRouter.replace).toHaveBeenCalledWith('/authentication');
+        })
+    });
 });

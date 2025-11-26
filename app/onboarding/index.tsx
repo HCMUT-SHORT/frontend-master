@@ -141,6 +141,7 @@ export default function Onboarding() {
                     horizontal
                     pagingEnabled
                     onScroll={scrollHandler}
+                    onScrollToIndexFailed={() => {}}
                     showsHorizontalScrollIndicator={false}
                     onMomentumScrollEnd={(e) => {
                         const index = Math.round(e.nativeEvent.contentOffset.x / width);
