@@ -65,8 +65,43 @@ export default function HomeLayout() {
                 return;
             }
         };
-
         fetchUserTours();
+        const fetchSharedTours = async () => {
+            if (tours.length > 0) return;
+            if (!userId) return;
+            try{
+                const response = await axiosClient.get(`/tour/getSharedTours/${userId}`);
+                response.data.forEach((tour: any) => {
+                    const exists = tours.some(t => t.id === tour.id);
+
+                    if (!exists) {
+                        dispatch(addTour({
+                            id: tour.id,
+                            createdAt: tour.createdAt || "",
+                            createdBy: tour.createdBy || "",
+                            destination: tour.destination,
+                            checkInDate: tour.checkInDate,
+                            checkOutDate: tour.checkOutDate,
+                            minBudget: tour.minBudget.toString(), 
+                            maxBudget: tour.maxBudget.toString(),
+                            travelType: tour.travelType,
+                            imageUrl: tour.imageUrl,
+                            placesToVisit: [],
+                            placesToStay: [],
+                            transportations: [],
+                            changedPlaces: {},
+                            changedPlacesStay: {},
+                            changedTransportations: {},
+                            placeToStayError: "",
+                        }));
+                    }
+                })
+            } catch(error: any) {
+                console.log("There is an error fetching user shared tours: ", error.message);
+                return;
+            }
+        };
+        fetchSharedTours();
     }, [userId, dispatch, tours])
 
     return (

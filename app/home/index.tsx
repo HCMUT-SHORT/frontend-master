@@ -81,7 +81,6 @@ function AnimatedCard({ index, scrollX, children } : { index: number; scrollX: S
 
 export default function Home() {
     const tours = useSelector((state: RootState) => state.tours);
-
     const today = new Date().getTime();
     const top3Tours = [...tours].filter(t => t.createdAt).sort((a, b) => {
         const dateA = new Date(a.createdAt!).getTime();
@@ -107,6 +106,7 @@ export default function Home() {
                     imageUrl={item.imageUrl} 
                     checkInDate={item.checkInDate} 
                     checkOutDate={item.checkOutDate}
+                    type={"default"}
                 />
             </AnimatedCard>
         );

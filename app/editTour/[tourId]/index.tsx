@@ -106,6 +106,7 @@ export default function TourEdit() {
                 onPress={handleUpdatePlacesToVisit}
                 disabled={loading}
                 text={"Tiếp tục"}
+                type={"cont"}
             />
         </Container>
     )

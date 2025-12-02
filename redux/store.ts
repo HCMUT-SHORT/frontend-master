@@ -2,12 +2,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import tourCreateReducer from "./tourCreateSlice";
 import toursReducer from "./toursSlice";
 import userReducer from "./userSlice";
+import shareReducer from "./shareSlice";
 
 export const store = configureStore({
     reducer: {
         user: userReducer,
         tourCreate: tourCreateReducer,
-        tours: toursReducer
+        tours: toursReducer,
+        share: shareReducer
     }
 });
 

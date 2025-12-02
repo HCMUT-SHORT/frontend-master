@@ -110,6 +110,7 @@ export default function PlacesToStay() {
                 onPress={handleUpdatePlacesToStay}
                 disabled={loading}
                 text={"Tiếp tục"}
+                type="cont"
             />
         </Container>
     )

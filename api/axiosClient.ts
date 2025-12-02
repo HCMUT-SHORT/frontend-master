@@ -4,7 +4,7 @@ import axios from "axios";
 // http://localhost:5292
 
 export const axiosClient = axios.create({
-    baseURL: "http://localhost:5292",
+    baseURL: "https://encephalomyelitic-klara-trickiest.ngrok-free.dev",
     headers: {
         "Content-Type": "application/json",
     },

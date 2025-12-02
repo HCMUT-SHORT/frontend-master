@@ -4,6 +4,8 @@ import { useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 import { SkeletonImage } from "./SkeletonImage";
+import EvilIcons from '@expo/vector-icons/EvilIcons';
+import { ContinueButton } from "./ContinueButton";
 
 const Container = styled.View`
     background-color: ${COLORS.LIGHTYELLOW};
@@ -11,10 +13,19 @@ const Container = styled.View`
     padding: 14px;
 `;
 
+const Row = styled.View`
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+`;
+const Block = styled.View`
+    margin-top: 14px;
+`;
+
 const DestinationText = styled.Text`
     font-size: 16px;
     font-family: "Nunito-SemiBold";
-    margin-top: 14px;
+    
 `;
 
 const TourCreatedDate = styled.Text`
@@ -28,10 +39,13 @@ type TourCardProps = {
     destination: string | null,
     checkInDate: string | null,
     checkOutDate: string | null,
-    imageUrl: string | null
+    imageUrl: string | null,
+    type: "default" | "share" | "join"
+    onShare?: () => void,
+    onJoin?: () => void
 };
 
-export function TourCard ({ tourId, destination, checkInDate, checkOutDate, imageUrl } : TourCardProps) {
+export function TourCard ({ tourId, destination, checkInDate, checkOutDate, imageUrl, type, onShare, onJoin } : TourCardProps) {
     const router = useRouter();
     const checkInDateFormated = checkInDate ? formatDateDMY(checkInDate) : "";
     const checkOutDateFormated = checkOutDate ? formatDateDMY(checkOutDate) : "";
@@ -41,8 +55,27 @@ export function TourCard ({ tourId, destination, checkInDate, checkOutDate, imag
             <TouchableOpacity activeOpacity={1} onPress={() => router.replace(`/overviewTour/${tourId}`)}>  
                 <SkeletonImage uri={imageUrl || ""} height={268}/>
             </TouchableOpacity>
-            <DestinationText testID={"tour-destination"}>{destination}</DestinationText>
-            <TourCreatedDate>{checkInDateFormated} - {checkOutDateFormated}</TourCreatedDate>
+            <Row>
+                <Block>
+                    <DestinationText>{destination}</DestinationText>
+                    <TourCreatedDate>{checkInDateFormated} - {checkOutDateFormated}</TourCreatedDate>
+                </Block>
+
+                {type === "share" && (
+                    <TouchableOpacity onPress={onShare!}>
+                        <EvilIcons name="share-google" size={28} color="black" />
+                    </TouchableOpacity>
+                )}
+
+                {type === "join" && (
+                    <ContinueButton 
+                        onPress={onJoin!}
+                        disabled={false}
+                        type="join"
+                        text="Tham gia"
+                    />
+                )}
+            </Row>
         </Container>
     )
 }
