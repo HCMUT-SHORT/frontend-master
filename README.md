@@ -1,6 +1,7 @@
 # Welcome to AI Travel app 👋
 
 [![React Native CI - Test, Report & SonarCloud](https://github.com/HCMUT-SHORT/frontend-master/actions/workflows/test.yml/badge.svg)](https://github.com/HCMUT-SHORT/frontend-master/actions/workflows/test.yml)
+[![Quality gate](https://sonarcloud.io/api/project_badges/quality_gate?project=HCMUT-SHORT_frontend-master)](https://sonarcloud.io/summary/new_code?id=HCMUT-SHORT_frontend-master)
 
 This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
 
