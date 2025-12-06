@@ -13,6 +13,10 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
+import { createShareCode } from "@/hooks/shareData";
+import { ShareCodeModal } from "@/components/Modal";
+import { TourState } from "@/constants/type";
+
 
 const Container = styled.ScrollView`
     flex: 1;
@@ -60,7 +64,19 @@ export default function TourOverView() {
     const dispatch = useDispatch<AppDispatch>();
     const [loading, setLoading] = useState<boolean>(false);
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-
+    
+    const [genCode, setGenCode] = useState("");
+    const [isShareModalVisible, setShareModalVisible] = useState(false);
+    const token = useSelector((state: RootState) => state.user.token);
+    const handleShare = async (tour: TourState) => {
+        try {
+          const code = await createShareCode(tour, token, dispatch);
+          setGenCode(code);
+          setShareModalVisible(true);
+        } catch {
+          alert("Không thể tạo mã chia sẻ");
+        }
+      };
     useEffect(() => {
         const handleLoadTourData = async () => {
             if (!selectedTour) return;
@@ -140,7 +156,7 @@ export default function TourOverView() {
         <Container>
             <SkeletonImage uri={selectedTour.imageUrl || "" } height={225}/>
             <ToolContainer>
-                <ToolButton>
+                <ToolButton onPress={() => handleShare(selectedTour)}>
                     <EvilIcons name="share-google" size={30} color="black" />
                 </ToolButton>
                 <ToolButton onPress={() => router.replace(`/editTour/${tourId}`)}>
@@ -169,6 +185,12 @@ export default function TourOverView() {
                     />
                 ))}
             </AccordionItemWrapper>
+            <ShareCodeModal
+                visible={isShareModalVisible}
+                code={genCode}
+                onClose={() => setShareModalVisible(false)}
+            />
+
         </Container>
     )
 }

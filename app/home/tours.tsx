@@ -1,5 +1,6 @@
 import { InputField } from "@/components/InputField";
 import { TourCard } from "@/components/TourCard";
+import { Popup } from "@/components/PopUp";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
 import { useState, useEffect, useCallback } from "react";
@@ -46,6 +47,7 @@ export default function Tours() {
   const [shareCode, setShareCode] = useState("");
   const [genCode, setGenCode] = useState("");
   const [isShareModalVisible, setShareModalVisible] = useState(false);
+  const [showPopUp, setShowPopUp] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -83,8 +85,8 @@ export default function Tours() {
   const handleJoin = async () => {
     try {
       await joinSharedTour(shareCode.trim(), token, dispatch);
-      alert("Tham gia tour thành công!");
       setShareCode("");
+      setShowPopUp(true)
     } catch {
       alert("Không thể tham gia tour");
     }
@@ -133,6 +135,12 @@ export default function Tours() {
           code={genCode}
           onClose={() => setShareModalVisible(false)}
         />
+        <Popup
+          visible={showPopUp}
+          message="Tham gia tour thành công!"
+          onHide={() => setShowPopUp(false)}
+        />
+
       </MainContainer>
     </Container>
   );

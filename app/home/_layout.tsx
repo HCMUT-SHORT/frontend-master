@@ -4,7 +4,7 @@ import { HomeIcon } from "@/assets/Icons/HomeIcon";
 import { PlusIcon } from "@/assets/Icons/PlusIcon";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
-import { addTour } from "@/redux/toursSlice";
+import { addTour, setTours } from "@/redux/toursSlice";
 import { Tabs, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -26,6 +26,14 @@ export default function HomeLayout() {
     const userId = useSelector((state: RootState) => state.user.userId);
     const tours = useSelector((state: RootState) => state.tours);
     const dispatch = useDispatch<AppDispatch>();
+    const dedupeTours = (tours: any[]) => {
+        const map = new Map();
+        tours.forEach(tour => {
+            map.set(tour.id, tour);
+        });
+        return Array.from(map.values());
+    };
+
 
     useEffect(() => {
         const fetchUserTours = async () => {
@@ -67,7 +75,6 @@ export default function HomeLayout() {
         };
         fetchUserTours();
         const fetchSharedTours = async () => {
-            if (tours.length > 0) return;
             if (!userId) return;
             try{
                 const response = await axiosClient.get(`/tour/getSharedTours/${userId}`);
@@ -102,7 +109,16 @@ export default function HomeLayout() {
             }
         };
         fetchSharedTours();
-    }, [userId, dispatch, tours])
+    }, [userId, dispatch])
+    useEffect(() => {
+        if (tours.length === 0) return;
+        const unique = dedupeTours(tours);
+        if (unique.length !== tours.length) {
+            dispatch(setTours(unique));   
+        }
+    }, [dispatch, tours]);
+
+    
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTGREEN }} edges={["top"]}>

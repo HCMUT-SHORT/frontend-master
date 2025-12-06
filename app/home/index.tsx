@@ -2,10 +2,12 @@ import { TourCard } from "@/components/TourCard";
 import { COLORS } from "@/constants/Colors";
 import { TourState } from "@/constants/type";
 import { RootState } from "@/redux/store";
+import { router } from "expo-router";
 import { Dimensions } from "react-native";
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useSelector } from "react-redux";
 import styled from "styled-components/native";
+
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = 268;
@@ -87,7 +89,6 @@ export default function Home() {
         const dateB = new Date(b.createdAt!).getTime();
         return Math.abs(dateA - today) - Math.abs(dateB - today);
     }).slice(0, 3);
-
     const scrollX = useSharedValue(0);
 
     const onScroll = useAnimatedScrollHandler({
@@ -100,7 +101,6 @@ export default function Home() {
         return (
             <AnimatedCard index={index} scrollX={scrollX}>
                 <TourCard
-                    key={item.id}
                     tourId={item.id}
                     destination={item.destination} 
                     imageUrl={item.imageUrl} 
@@ -119,12 +119,13 @@ export default function Home() {
 
                 <MytourTextContainer>
                     <MyTourText>Tour của tôi</MyTourText>
-                    <SeeAllTour>Xem tất cả</SeeAllTour>
+                    <SeeAllTour onPress={() => {router.push("/home/tours")}}>Xem tất cả</SeeAllTour>
                 </MytourTextContainer>
 
                 <Animated.FlatList
                     data={top3Tours}
                     renderItem={renderItem}
+                    keyExtractor={(item) => item.id || Math.random().toString()}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     onScroll={onScroll}
