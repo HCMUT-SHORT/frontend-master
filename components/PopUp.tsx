@@ -27,18 +27,16 @@ const PopupText = styled.Text`
 `;
 
 export function Popup({ visible, message, onHide }: PopupProps) {
-  const slideAnim = useRef(new Animated.Value(200)).current; // start off-screen (right)
+  const slideAnim = useRef(new Animated.Value(200)).current;
 
   useEffect(() => {
     if (visible) {
-      // ➜ Slide IN
       Animated.timing(slideAnim, {
         toValue: 0,
         duration: 250,
         useNativeDriver: true,
       }).start();
 
-      // ➜ Auto close
       const timer = setTimeout(() => {
         Animated.timing(slideAnim, {
           toValue: 200,

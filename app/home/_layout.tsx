@@ -26,99 +26,97 @@ export default function HomeLayout() {
     const userId = useSelector((state: RootState) => state.user.userId);
     const tours = useSelector((state: RootState) => state.tours);
     const dispatch = useDispatch<AppDispatch>();
-    const dedupeTours = (tours: any[]) => {
-        const map = new Map();
-        tours.forEach(tour => {
-            map.set(tour.id, tour);
-        });
-        return Array.from(map.values());
-    };
 
 
-    useEffect(() => {
-        const fetchUserTours = async () => {
-            if (tours.length > 0) return;
-            if (!userId) return;
+    // useEffect(() => {
+    //     const fetchUserTours = async () => {
+    //         if (tours.length > 0) return;
+    //         if (!userId) return;
 
-            try {
-                const response = await axiosClient.get(`/tour/getUserTours/${userId}`);
+    //         try {
+    //             const response = await axiosClient.get(`/tour/getUserTours/${userId}`);
                 
-                response.data.forEach((tour: any) => {
-                    const exists = tours.some(t => t.id === tour.id);
+    //             response.data.forEach((tour: any) => {
+    //                 const exists = tours.some(t => t.id === tour.id);
 
-                    if (!exists) {
-                        dispatch(addTour({
-                            id: tour.id,
-                            createdAt: tour.createdAt,
-                            createdBy: tour.createdBy,
-                            destination: tour.destination,
-                            checkInDate: tour.checkindate,
-                            checkOutDate: tour.checkoutdate,
-                            minBudget: tour.minBudget.toString(), 
-                            maxBudget: tour.maxBudget.toString(),
-                            travelType: tour.travelType,
-                            imageUrl: tour.imageUrl,
-                            placesToVisit: [],
-                            placesToStay: [],
-                            transportations: [],
-                            changedPlaces: {},
-                            changedPlacesStay: {},
-                            changedTransportations: {},
-                            placeToStayError: "",
-                        }));
-                    }
-                })
-            } catch(error: any) {
-                console.log("There is an error fetching user tours: ", error.message);
-                return;
-            }
-        };
-        fetchUserTours();
-        const fetchSharedTours = async () => {
-            if (!userId) return;
-            try{
-                const response = await axiosClient.get(`/tour/getSharedTours/${userId}`);
-                response.data.forEach((tour: any) => {
-                    const exists = tours.some(t => t.id === tour.id);
+    //                 if (!exists) {
+    //                     dispatch(addTour({
+    //                         id: tour.id,
+    //                         createdAt: tour.createdAt,
+    //                         createdBy: tour.createdBy,
+    //                         destination: tour.destination,
+    //                         checkInDate: tour.checkindate,
+    //                         checkOutDate: tour.checkoutdate,
+    //                         minBudget: tour.minBudget.toString(), 
+    //                         maxBudget: tour.maxBudget.toString(),
+    //                         travelType: tour.travelType,
+    //                         imageUrl: tour.imageUrl,
+    //                         placesToVisit: [],
+    //                         placesToStay: [],
+    //                         transportations: [],
+    //                         changedPlaces: {},
+    //                         changedPlacesStay: {},
+    //                         changedTransportations: {},
+    //                         placeToStayError: "",
+    //                     }));
+    //                 }
+    //             })
+    //         } catch(error: any) {
+    //             console.log("There is an error fetching user tours: ", error.message);
+    //             return;
+    //         }
+    //     };
+    //     fetchUserTours();
+    // }, [userId, dispatch, tours])
 
-                    if (!exists) {
-                        dispatch(addTour({
-                            id: tour.id,
-                            createdAt: tour.createdAt || "",
-                            createdBy: tour.createdBy || "",
-                            destination: tour.destination,
-                            checkInDate: tour.checkInDate,
-                            checkOutDate: tour.checkOutDate,
-                            minBudget: tour.minBudget.toString(), 
-                            maxBudget: tour.maxBudget.toString(),
-                            travelType: tour.travelType,
-                            imageUrl: tour.imageUrl,
-                            placesToVisit: [],
-                            placesToStay: [],
-                            transportations: [],
-                            changedPlaces: {},
-                            changedPlacesStay: {},
-                            changedTransportations: {},
-                            placeToStayError: "",
-                        }));
-                    }
-                })
-            } catch(error: any) {
-                console.log("There is an error fetching user shared tours: ", error.message);
-                return;
-            }
-        };
-        fetchSharedTours();
-    }, [userId, dispatch])
     useEffect(() => {
-        if (tours.length === 0) return;
-        const unique = dedupeTours(tours);
-        if (unique.length !== tours.length) {
-            dispatch(setTours(unique));   
-        }
-    }, [dispatch, tours]);
+        if (!userId) return;
+        let isMounted = true;
+        const fetchTours = async () => {
+            try {
+            const [userRes, sharedRes] = await Promise.all([
+                axiosClient.get(`/tour/getUserTours/${userId}`),
+                axiosClient.get(`/tour/getSharedTours/${userId}`)
+            ]);
 
-    
+            const userTours = userRes.data;
+            const sharedTours = sharedRes.data;
+
+            const mapped = [...userTours, ...sharedTours].map((tour: any) => ({
+                id: tour.id,
+                createdAt: tour.createdAt || "",
+                createdBy: tour.createdBy || "",
+                destination: tour.destination,
+                checkInDate: tour.checkInDate || tour.checkindate,
+                checkOutDate: tour.checkOutDate || tour.checkoutdate,
+                minBudget: tour.minBudget.toString(),
+                maxBudget: tour.maxBudget.toString(),
+                travelType: tour.travelType,
+                imageUrl: tour.imageUrl,
+                placesToVisit: [],
+                placesToStay: [],
+                transportations: [],
+                changedPlaces: {},
+                changedPlacesStay: {},
+                changedTransportations: {},
+                placeToStayError: "",
+            }));
+
+            const unique = mapped.filter(
+                (v, i, arr) => arr.findIndex(x => x.id === v.id) === i
+            );
+
+            if (isMounted) {
+                dispatch(setTours(unique));
+            }
+            } catch (error: any) {
+            console.log("Error fetching tours:", error.message);
+            }
+        };
+
+        fetchTours();
+        return () => { isMounted = false };
+    }, [userId, dispatch]);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTGREEN }} edges={["top"]}>

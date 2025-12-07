@@ -101,6 +101,7 @@ export default function Home() {
         return (
             <AnimatedCard index={index} scrollX={scrollX}>
                 <TourCard
+                    key={item.id}
                     tourId={item.id}
                     destination={item.destination} 
                     imageUrl={item.imageUrl} 
@@ -125,7 +126,6 @@ export default function Home() {
                 <Animated.FlatList
                     data={top3Tours}
                     renderItem={renderItem}
-                    keyExtractor={(item) => item.id || Math.random().toString()}
                     horizontal
                     showsHorizontalScrollIndicator={false}
                     onScroll={onScroll}
