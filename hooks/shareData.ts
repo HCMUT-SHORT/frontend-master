@@ -67,7 +67,7 @@ export const joinSharedTour = async (
     code: string,
     token: string | null,
     dispatch: AppDispatch
-) => {
+): Promise<"joined" | "already_joined"> => {
     try {
         dispatch(setShareLoading(true));
         dispatch(setShareError(null));
@@ -80,7 +80,13 @@ export const joinSharedTour = async (
             }
         );
 
-        const tourid = response.data.tourId;
+        const { tourid, message } = response.data;
+
+        // 🟡 Already joined
+        if (message === "Already joined") {
+            return "already_joined";
+        }
+
         const tourResponse = await axiosClient.get(`/tour/${tourid}`);
         const tour = tourResponse.data[0];
         const mappedTour: TourState = {
@@ -89,6 +95,7 @@ export const joinSharedTour = async (
             checkOutDate: tour.checkoutdate,
         };
         dispatch(addTour(mappedTour))
+        return "joined";
 
     } catch (error: any) {
         dispatch(setShareError("Không thể tham gia tour"));

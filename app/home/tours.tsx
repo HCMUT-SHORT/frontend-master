@@ -48,6 +48,8 @@ export default function Tours() {
   const [genCode, setGenCode] = useState("");
   const [isShareModalVisible, setShareModalVisible] = useState(false);
   const [showPopUp, setShowPopUp] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
+
 
   useFocusEffect(
     useCallback(() => {
@@ -84,8 +86,13 @@ export default function Tours() {
 
   const handleJoin = async () => {
     try {
-      await joinSharedTour(shareCode.trim(), token, dispatch);
+      const result = await joinSharedTour(shareCode.trim(), token, dispatch);
       setShareCode("");
+      if (result === "already_joined") {
+            setPopupMessage("Bạn đã tham gia tour");
+        } else {
+            setPopupMessage("Tham gia tour thành công!");
+        }
       setShowPopUp(true)
     } catch {
       alert("Không thể tham gia tour");
@@ -137,7 +144,7 @@ export default function Tours() {
         />
         <Popup
           visible={showPopUp}
-          message="Tham gia tour thành công!"
+          message={popupMessage}
           onHide={() => setShowPopUp(false)}
         />
 
