@@ -15,14 +15,25 @@
         "backgroundColor": "#E6F4FE"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.azas01.mobileappfrontend"
     },
     "web": {
       "output": "static"
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "sentry-expo",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "note": "Use SENTRY_AUTH_TOKEN env to authenticate with Sentry.",
+          "project": "ai-travel",
+          "organization": "hcmut-short"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
@@ -31,14 +42,14 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "c03d6764-a231-4e44-8da3-a41df24daa64"
+        "projectId": "26630826-37a0-4c5e-8836-396dfbc2eb74"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/c03d6764-a231-4e44-8da3-a41df24daa64"
+      "url": "https://u.expo.dev/26630826-37a0-4c5e-8836-396dfbc2eb74"
     }
   }
 }

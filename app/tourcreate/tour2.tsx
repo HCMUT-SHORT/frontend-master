@@ -10,6 +10,7 @@ import { Calendar, DateData, LocaleConfig } from "react-native-calendars";
 import { MarkedDates } from "react-native-calendars/src/types";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
+import * as Sentry from "sentry-expo";
 
 LocaleConfig.locales['vi'] = {
     monthNames: ['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'],
@@ -89,6 +90,19 @@ export default function TourCreate2() {
     const dispatch = useDispatch<AppDispatch>();
     const [errorText, setErrorText] = useState<string>("");
     const today = new Date().toISOString().split("T")[0];
+    useEffect(() => {
+        Sentry.Native.addBreadcrumb({
+            category: "tour_create",
+            message: "Entered Create Tour - Step 2 (Date & Budget)",
+        });
+
+        return () => {
+            Sentry.Native.addBreadcrumb({
+                category: "tour_create",
+                message: "Left Create Tour - Step 2",
+            });
+        };
+    }, []);
 
     const handleDayPress = (date: DateData) => {
         if (!checkInDate) {
@@ -120,7 +134,7 @@ export default function TourCreate2() {
         dispatch(setTourCreateField({ key: "checkInDate", value: date.dateString }));
         dispatch(setTourCreateField({ key: "checkOutDate", value: "" }));
     };
-
+    
     useEffect(() => {
         if (!errorText) return;
 
@@ -221,6 +235,7 @@ export default function TourCreate2() {
                 disabled={!(checkInDate && checkOutDate)}
                 onPress={() => router.replace("/tourloading")}
                 text={"Tiếp tục"}
+                type="cont"
             />
         </Container>
     )

@@ -7,9 +7,10 @@ import { AppDispatch, RootState } from "@/redux/store";
 import { stringifyDays } from "@/utility/stringConverter";
 import { formatDateDMY } from "@/utility/timeConverter";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
+import * as Sentry from "sentry-expo";
 
 const Container =styled.View`
     flex: 1;
@@ -34,6 +35,15 @@ export default function TourEdit() {
     const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const dispatch = useDispatch<AppDispatch>();
+    useEffect(() => {
+        Sentry.Native.addBreadcrumb({
+            category: "tour_edit",
+            message: "Entered Tour Edit Screen",
+            data: {
+                tourId,
+            },
+        });
+    }, [tourId]);
 
     if (!selectedTour) {
         return <></>
@@ -64,11 +74,27 @@ export default function TourEdit() {
                 dayVisit: stringifyDays(days)
             })
         );
+        const transaction = Sentry.Native.startTransaction({
+            name: "Update Places To Visit",
+            op: "http.client",
+        });
 
         try {
             setLoading(true);
+            Sentry.Native.addBreadcrumb({
+                category: "tour_edit",
+                message: "Submitting places to visit",
+                data: {
+                    tourId,
+                    updateCount: updateItems.length,
+                },
+            });
 
             if (updateItems.length === 0) {
+                Sentry.Native.addBreadcrumb({
+                    category: "tour_edit",
+                    message: "No changes made, skipping update",
+                });
                 await fetchPlacesToStay(selectedTour, dispatch);
                 router.push(`/editTour/${tourId}/placesToStay`);
                 return;
@@ -76,8 +102,29 @@ export default function TourEdit() {
                 
             await axiosClient.put("/tour/placestovisit", updateItems);
             await fetchPlacesToStay(selectedTour, dispatch);
+            
+            Sentry.Native.addBreadcrumb({
+                category: "tour_edit",
+                message: "Places to visit updated successfully",
+            });
+
+            transaction.finish();
+
             router.push(`/editTour/${tourId}/placesToStay`);
         } catch (error: any) {
+            transaction.setStatus("internal_error");
+
+            Sentry.Native.captureException(error, {
+                tags: {
+                    feature: "tour_edit",
+                },
+                extra: {
+                    tourId,
+                    updateItems,
+                },
+            });
+
+            transaction.finish();
             console.log("There is an error updating places to visit:", error.message);
         } finally {
             setLoading(false);
@@ -95,7 +142,21 @@ export default function TourEdit() {
                         index={index + 1} 
                         date={date}
                         isExpanded={index === expandedIndex}
-                        toggleAccordion={() => setExpandedIndex(expandedIndex === index ? null : index)}
+                        toggleAccordion={() => {
+                            const nextIndex = expandedIndex === index ? null : index;
+
+                            Sentry.Native.addBreadcrumb({
+                                category: "tour_edit",
+                                message: "Toggled accordion",
+                                data: {
+                                    dayIndex: index + 1,
+                                    expanded: nextIndex !== null,
+                                },
+                            });
+
+                            setExpandedIndex(nextIndex);
+                        }}
+
                         selectedTour={selectedTour}
                         type={"edit"}
                     />
