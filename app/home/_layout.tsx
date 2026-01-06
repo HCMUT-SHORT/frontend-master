@@ -4,7 +4,7 @@ import { HomeIcon } from "@/assets/Icons/HomeIcon";
 import { PlusIcon } from "@/assets/Icons/PlusIcon";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
-import { addTour } from "@/redux/toursSlice";
+import { addTour, setTours } from "@/redux/toursSlice";
 import { Tabs, useRouter } from "expo-router";
 import { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -27,47 +27,96 @@ export default function HomeLayout() {
     const tours = useSelector((state: RootState) => state.tours);
     const dispatch = useDispatch<AppDispatch>();
 
-    useEffect(() => {
-        const fetchUserTours = async () => {
-            if (tours.length > 0) return;
-            if (!userId) return;
 
-            try {
-                const response = await axiosClient.get(`/tour/getUserTours/${userId}`);
+    // useEffect(() => {
+    //     const fetchUserTours = async () => {
+    //         if (tours.length > 0) return;
+    //         if (!userId) return;
+
+    //         try {
+    //             const response = await axiosClient.get(`/tour/getUserTours/${userId}`);
                 
-                response.data.forEach((tour: any) => {
-                    const exists = tours.some(t => t.id === tour.id);
+    //             response.data.forEach((tour: any) => {
+    //                 const exists = tours.some(t => t.id === tour.id);
 
-                    if (!exists) {
-                        dispatch(addTour({
-                            id: tour.id,
-                            createdAt: tour.createdAt,
-                            createdBy: tour.createdBy,
-                            destination: tour.destination,
-                            checkInDate: tour.checkindate,
-                            checkOutDate: tour.checkoutdate,
-                            minBudget: tour.minBudget.toString(), 
-                            maxBudget: tour.maxBudget.toString(),
-                            travelType: tour.travelType,
-                            imageUrl: tour.imageUrl,
-                            placesToVisit: [],
-                            placesToStay: [],
-                            transportations: [],
-                            changedPlaces: {},
-                            changedPlacesStay: {},
-                            changedTransportations: {},
-                            placeToStayError: "",
-                        }));
-                    }
-                })
-            } catch(error: any) {
-                console.log("There is an error fetching user tours: ", error.message);
-                return;
+    //                 if (!exists) {
+    //                     dispatch(addTour({
+    //                         id: tour.id,
+    //                         createdAt: tour.createdAt,
+    //                         createdBy: tour.createdBy,
+    //                         destination: tour.destination,
+    //                         checkInDate: tour.checkindate,
+    //                         checkOutDate: tour.checkoutdate,
+    //                         minBudget: tour.minBudget.toString(), 
+    //                         maxBudget: tour.maxBudget.toString(),
+    //                         travelType: tour.travelType,
+    //                         imageUrl: tour.imageUrl,
+    //                         placesToVisit: [],
+    //                         placesToStay: [],
+    //                         transportations: [],
+    //                         changedPlaces: {},
+    //                         changedPlacesStay: {},
+    //                         changedTransportations: {},
+    //                         placeToStayError: "",
+    //                     }));
+    //                 }
+    //             })
+    //         } catch(error: any) {
+    //             console.log("There is an error fetching user tours: ", error.message);
+    //             return;
+    //         }
+    //     };
+    //     fetchUserTours();
+    // }, [userId, dispatch, tours])
+
+    useEffect(() => {
+        if (!userId) return;
+        let isMounted = true;
+        const fetchTours = async () => {
+            try {
+            const [userRes, sharedRes] = await Promise.all([
+                axiosClient.get(`/tour/getUserTours/${userId}`),
+                axiosClient.get(`/tour/getSharedTours/${userId}`)
+            ]);
+
+            const userTours = userRes.data;
+            const sharedTours = sharedRes.data;
+
+            const mapped = [...userTours, ...sharedTours].map((tour: any) => ({
+                id: tour.id,
+                createdAt: tour.createdAt || "",
+                createdBy: tour.createdBy || "",
+                destination: tour.destination,
+                checkInDate: tour.checkInDate || tour.checkindate,
+                checkOutDate: tour.checkOutDate || tour.checkoutdate,
+                minBudget: tour.minBudget.toString(),
+                maxBudget: tour.maxBudget.toString(),
+                travelType: tour.travelType,
+                imageUrl: tour.imageUrl,
+                placesToVisit: [],
+                placesToStay: [],
+                transportations: [],
+                changedPlaces: {},
+                changedPlacesStay: {},
+                changedTransportations: {},
+                placeToStayError: "",
+            }));
+
+            const unique = mapped.filter(
+                (v, i, arr) => arr.findIndex(x => x.id === v.id) === i
+            );
+
+            if (isMounted) {
+                dispatch(setTours(unique));
+            }
+            } catch (error: any) {
+            console.log("Error fetching tours:", error.message);
             }
         };
 
-        fetchUserTours();
-    }, [userId, dispatch, tours])
+        fetchTours();
+        return () => { isMounted = false };
+    }, [userId, dispatch]);
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.LIGHTGREEN }} edges={["top"]}>

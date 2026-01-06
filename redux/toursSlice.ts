@@ -115,9 +115,12 @@ const ToursSlice = createSlice({
                     }
                 }
             });
-        }
+        },
+        setTours(state, action: PayloadAction<any[]>) {
+            return action.payload; // completely replace the list
+        },
     }
 });
 
-export const { addTour, addPlacesToVisit, togglePlaceDayVisit, addPlacesToStay, togglePlaceToStay, clearPlaceToStayError, addTransportations, toggleTransportation } = ToursSlice.actions;
+export const { addTour, addPlacesToVisit, togglePlaceDayVisit, addPlacesToStay, togglePlaceToStay, clearPlaceToStayError, addTransportations, toggleTransportation, setTours } = ToursSlice.actions;
 export default ToursSlice.reducer;

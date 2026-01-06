@@ -2,10 +2,12 @@ import { TourCard } from "@/components/TourCard";
 import { COLORS } from "@/constants/Colors";
 import { TourState } from "@/constants/type";
 import { RootState } from "@/redux/store";
+import { router } from "expo-router";
 import { Dimensions } from "react-native";
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useSelector } from "react-redux";
 import styled from "styled-components/native";
+
 
 const { width } = Dimensions.get("window");
 const ITEM_WIDTH = 268;
@@ -81,14 +83,12 @@ function AnimatedCard({ index, scrollX, children } : { index: number; scrollX: S
 
 export default function Home() {
     const tours = useSelector((state: RootState) => state.tours);
-
     const today = new Date().getTime();
     const top3Tours = [...tours].filter(t => t.createdAt).sort((a, b) => {
         const dateA = new Date(a.createdAt!).getTime();
         const dateB = new Date(b.createdAt!).getTime();
         return Math.abs(dateA - today) - Math.abs(dateB - today);
     }).slice(0, 3);
-
     const scrollX = useSharedValue(0);
 
     const onScroll = useAnimatedScrollHandler({
@@ -107,6 +107,7 @@ export default function Home() {
                     imageUrl={item.imageUrl} 
                     checkInDate={item.checkInDate} 
                     checkOutDate={item.checkOutDate}
+                    type={"default"}
                 />
             </AnimatedCard>
         );
@@ -119,7 +120,7 @@ export default function Home() {
 
                 <MytourTextContainer>
                     <MyTourText>Tour của tôi</MyTourText>
-                    <SeeAllTour>Xem tất cả</SeeAllTour>
+                    <SeeAllTour onPress={() => {router.push("/home/tours")}}>Xem tất cả</SeeAllTour>
                 </MytourTextContainer>
 
                 <Animated.FlatList

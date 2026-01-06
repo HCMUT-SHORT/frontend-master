@@ -96,6 +96,7 @@ export default function TourCreate1() {
                 onPress={() => router.push("/tourcreate/tour2")} 
                 disabled={!(destination && travelType)}
                 text={"Tiếp tục"}
+                type="cont"
             />
         </Container>
     )

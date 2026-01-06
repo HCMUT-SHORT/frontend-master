@@ -80,6 +80,7 @@ export default function Transportation() {
                 onPress={handleUpdateTransportation}
                 disabled={loading}
                 text={"Tiếp tục"}
+                type="cont"
             />
         </Container>
     )
