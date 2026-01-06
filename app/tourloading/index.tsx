@@ -4,9 +4,10 @@ import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
 import { addTour } from "@/redux/toursSlice";
 import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
+import * as Sentry from "@sentry/react-native";
 
 const Container = styled.View`
     background-color: ${COLORS.LIGHTGREEN};
@@ -52,14 +53,38 @@ export default function TourLoading() {
     const minBudget = Number(useSelector((state: RootState) => state.tourCreate.MinBudget));
     const maxBudget = Number(useSelector((state: RootState) => state.tourCreate.MaxBudget));
     const dispatch= useDispatch<AppDispatch>();
-
+    const hasCreatedRef = useRef(false);
     const [errorText, setErrorText] = useState<string>("");
+    useEffect(() => {
+        Sentry.addBreadcrumb({
+            category: "tour_create",
+            message: "Entered Tour Creation Loading",
+        });
+    }, []);
 
     useEffect(() => {
         const CreateTour = async () => {
-            if (!userId || !destination || !travelType || !checkInDate || !checkOutDate || !minBudget || !maxBudget) return;
+            if (hasCreatedRef.current) return;
+            hasCreatedRef.current = true;
 
+            if (!userId || !destination || !travelType || !checkInDate || !checkOutDate || !minBudget || !maxBudget) return;
+            // const transaction = Sentry.startTransaction({
+            //     name: "Create Tour",
+            //     op: "http.client",
+            // });
             try {
+                Sentry.addBreadcrumb({
+                    category: "tour_create",
+                    message: "Sending create tour request",
+                    data: {
+                        destination,
+                        travelType,
+                        checkInDate,
+                        checkOutDate,
+                        minBudget,
+                        maxBudget,
+                    },
+                });
                 const response = await axiosClient.post("/tour/create", {
                     userId: userId,
                     destination: destination,
@@ -69,7 +94,13 @@ export default function TourLoading() {
                     minBudget: minBudget,
                     maxBudget: maxBudget
                 });
-                
+                Sentry.addBreadcrumb({
+                    category: "tour_create",
+                    message: "Tour created successfully",
+                    data: {
+                        tourId: response.data[0].id,
+                    },
+                });
                 dispatch(addTour({
                     id: response.data[0].id,
                     createdAt: response.data[0].createdAt,
@@ -83,9 +114,26 @@ export default function TourLoading() {
                     imageUrl: response.data[0].imageUrl,
                     placesToVisit: []
                 }));
-
+                // transaction.finish();
                 router.replace(`/editTour/${response.data[0].id}`);
             } catch (error: any) {
+                // transaction.setStatus("internal_error");
+
+                Sentry.captureException(error, {
+                    tags: {
+                        feature: "tour_create",
+                    },
+                    extra: {
+                        destination,
+                        travelType,
+                        checkInDate,
+                        checkOutDate,
+                        minBudget,
+                        maxBudget,
+                    },
+                });
+
+                // transaction.finish();
                 console.log("There is an error creating new tour:", error.message);
                 setErrorText("Tạo tour gặp lỗi!")
                 return;

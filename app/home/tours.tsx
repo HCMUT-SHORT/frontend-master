@@ -12,6 +12,7 @@ import { createShareCode, lookupShareCode, joinSharedTour } from "@/hooks/shareD
 import { TourState } from "@/constants/type";
 import { setLookupTour, setShareError } from "@/redux/shareSlice";
 import { ShareCodeModal } from "@/components/Modal";
+import * as Sentry from "@sentry/react-native";
 
 const Container = styled.View`
   flex: 1;
@@ -50,6 +51,21 @@ export default function Tours() {
   const [showPopUp, setShowPopUp] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
 
+  useFocusEffect(
+    useCallback(() => {
+      Sentry.addBreadcrumb({
+        category: "navigation",
+        message: "Entered My Tours page",
+      });
+
+      return () => {
+        Sentry.addBreadcrumb({
+          category: "navigation",
+          message: "Left My Tours page",
+        });
+      };
+    }, [])
+  );
 
   useFocusEffect(
     useCallback(() => {
@@ -69,24 +85,74 @@ export default function Tours() {
     }
 
     if (code.length >= 10) {
-      lookupShareCode(code, dispatch).catch(() => {
+      Sentry.addBreadcrumb({
+        category: "share",
+        message: "User attempted share code lookup",
+        data: { codeLength: code.length },
+      });
+
+      lookupShareCode(code, dispatch).catch((error) => {
+        Sentry.captureException(error, {
+          tags: {
+            feature: "share",
+            action: "lookup",
+          },
+        });
       });
     }
   }, [shareCode, dispatch]);
 
   const handleShare = async (tour: TourState) => {
+    Sentry.addBreadcrumb({
+      category: "share",
+      message: "User requested share code",
+      data: {
+        tourId: tour.id,
+        destination: tour.destination,
+      },
+    });
+
     try {
       const code = await createShareCode(tour, token, dispatch);
+      Sentry.captureMessage("Share code generated", {
+        level: "info",
+        tags: {
+          feature: "share",
+        },
+        extra: {
+          tourId: tour.id,
+        },
+      });
       setGenCode(code);
       setShareModalVisible(true);
-    } catch {
-      alert("Không thể tạo mã chia sẻ");
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: {
+          feature: "share",
+          action: "create",
+        },
+      });
+      // alert("Không thể tạo mã chia sẻ");
     }
   };
 
   const handleJoin = async () => {
+    Sentry.addBreadcrumb({
+      category: "share",
+      message: "User attempted to join shared tour",
+    });
+
     try {
       const result = await joinSharedTour(shareCode.trim(), token, dispatch);
+      Sentry.captureMessage("Join shared tour result", {
+        level: "info",
+        tags: {
+          feature: "share",
+        },
+        extra: {
+          result,
+        },
+      });
       setShareCode("");
       if (result === "already_joined") {
             setPopupMessage("Bạn đã tham gia tour");
@@ -94,10 +160,30 @@ export default function Tours() {
             setPopupMessage("Tham gia tour thành công!");
         }
       setShowPopUp(true)
-    } catch {
-      alert("Không thể tham gia tour");
+    } catch (error) {
+        Sentry.captureException(error, {
+          tags: {
+            feature: "share",
+            action: "join",
+          },
+        });
+      // alert("Không thể tham gia tour");
     }
   };
+  useEffect(() => {
+    if (error) {
+      Sentry.captureMessage("Share feature error", {
+        level: "warning",
+        tags: {
+          feature: "share",
+        },
+        extra: {
+          error,
+        },
+      });
+    }
+  }, [error]);
+
 
   const renderTourCard = ({ item }: { item: TourState }) => (
     <TourCard

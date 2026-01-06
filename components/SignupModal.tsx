@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 import { InputField } from "./InputField";
 import { LayoutModal } from "./LayoutModal";
+import * as Sentry from "sentry-expo";
 
 const ButtonContainer = styled.View`
     flex-direction: row;
@@ -89,14 +90,41 @@ export function SignupModal ({ onLoginPress } : SignupModalProps) {
 		}
 
 		setLocalError('');
+		Sentry.Native.addBreadcrumb({
+			category: "auth",
+			message: "User attempted signup",
+		});
 		dispatch(signup(form));
 	};
 
 	useEffect(() => {
 		if (userId) {
-            router.replace("/home");
-        }
+			Sentry.Native.setUser({
+				id: userId,
+			});
+
+			Sentry.Native.captureMessage("User signed up", {
+				tags: { flow: "auth" },
+			});
+
+			router.replace("/home");
+		}
 	}, [userId, router]);
+
+	useEffect(() => {
+		if (error) {
+			Sentry.Native.captureMessage("Signup failed", {
+				level: "warning",
+				tags: {
+					flow: "auth",
+					type: "signup",
+				},
+				extra: {
+					errorMessage: error,
+				},
+			});
+		}
+	}, [error]);
 
     return (
         <LayoutModal modalTitle={"Đăng ký tài khoản"} backgroundColor={COLORS.WHITE}>

@@ -6,6 +6,8 @@ import { setTourCreateField } from "@/redux/tourCreateSlice";
 import { useRouter } from "expo-router";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
+import * as Sentry from "sentry-expo";
+import { useEffect } from "react";
 
 interface TravelItemProps {
     selected: boolean
@@ -53,7 +55,19 @@ export default function TourCreate1() {
     const destination = useSelector((state: RootState) => state.tourCreate.destination);
     const travelType = useSelector((state: RootState) => state.tourCreate.travelType);
     const dispatch = useDispatch<AppDispatch>();
+    useEffect(() => {
+        Sentry.Native.addBreadcrumb({
+            category: "tour_create",
+            message: "Entered Create Tour - Step 1",
+        });
 
+        return () => {
+            Sentry.Native.addBreadcrumb({
+            category: "tour_create",
+            message: "Left Create Tour - Step 1",
+            });
+        };
+    }, []);
     const travelTypeItems = [
         { value: "exploration", label: "Thám hiểm" },
         { value: "vacation", label: "Nghỉ dưỡng" },
@@ -84,7 +98,17 @@ export default function TourCreate1() {
                         <TravelItem 
                             key={item.value}
                             selected={isSelected}
-                            onPress={() => dispatch(setTourCreateField({ key: "travelType", value: item.value }))}
+                            onPress={() => {
+                            dispatch(setTourCreateField({ key: "travelType", value: item.value }));
+
+                            Sentry.Native.addBreadcrumb({
+                                category: "tour_create",
+                                message: "Selected travel type",
+                                data: {
+                                travelType: item.value,
+                                },
+                            });
+                            }}
                         >
                             <TravelText selected={isSelected}>{item.label}</TravelText>
                         </TravelItem>

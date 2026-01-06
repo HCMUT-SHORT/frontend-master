@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
 import { InputField } from "./InputField";
 import { LayoutModal } from "./LayoutModal";
+import * as Sentry from "sentry-expo";
 
 const ButtonContainer = styled.View`
     flex-direction: row;
@@ -71,9 +72,32 @@ export function LoginModal ({ onSignupPress } : LoginModalProps) {
     
     useEffect(() => {
         if (userId) {
+            Sentry.Native.setUser({
+                id: userId,
+            });
+
+            Sentry.Native.captureMessage("User logged in", {
+                tags: { flow: "auth" },
+            });
+
             router.replace("/home");
         }
     }, [userId, router]);
+
+    useEffect(() => {
+        if (error) {
+            Sentry.Native.captureMessage("Login failed", {
+                level: "warning",
+                tags: {
+                    flow: "auth",
+                    type: "login",
+                },
+                extra: {
+                    errorMessage: error,
+                },
+            });
+        }
+    }, [error]);
 
     return (
         <LayoutModal modalTitle={"Đăng nhập"} backgroundColor={COLORS.WHITE}>
@@ -96,7 +120,15 @@ export function LoginModal ({ onSignupPress } : LoginModalProps) {
 
                 <ErrorText>{error}</ErrorText>
 
-                <Button style={{ opacity: loading ? 0.5 : 1 }} disabled={loading} onPress={() => dispatch(login(form))}>
+                <Button style={{ opacity: loading ? 0.5 : 1 }} disabled={loading} 
+                        onPress={() => {
+                            Sentry.Native.addBreadcrumb({
+                                category: "auth",
+                                message: "User attempted login",
+                            });
+
+                            dispatch(login(form));
+                        }}>
                     <ButtonText>
                         {loading ? "Đang đăng nhập..." : "Đăng nhập"}
                     </ButtonText>
