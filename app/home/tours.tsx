@@ -132,7 +132,6 @@ export default function Tours() {
           action: "create",
         },
       });
-      // alert("Không thể tạo mã chia sẻ");
     }
   };
 
@@ -167,7 +166,6 @@ export default function Tours() {
             action: "join",
           },
         });
-      // alert("Không thể tham gia tour");
     }
   };
   useEffect(() => {
