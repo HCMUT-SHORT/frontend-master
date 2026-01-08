@@ -15,3 +15,10 @@ jest.mock('@react-native-async-storage/async-storage', () => ({
     getItem: jest.fn(),
     removeItem: jest.fn(),
 }));
+
+jest.mock("@expo/vector-icons", () => ({
+    Ionicons: "Icon",
+    MaterialIcons: "Icon",
+    FontAwesome: "Icon",
+    EvilIcons: "Icon",
+}));

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface TourCreateState {
+export interface TourCreateState {
     destination: string | null;
     travelType: string | null;
     checkInDate: string | null;

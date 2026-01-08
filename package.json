@@ -13,7 +13,8 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:onboarding": "jest __tests__/Onboarding --coverage",
-    "test:home": "jest __tests__/Home --coverage"
+    "test:home": "jest __tests__/Home --coverage",
+    "test:tourcreate": "jest __tests__/TourCreate --coverage"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -91,6 +92,8 @@
       "app/home/**/index.tsx",
       "app/home/**/create.tsx",
       "app/home/**/tours.tsx",
+      "app/tourcreate/**/index.tsx",
+      "app/tourcreate/**/tour2.tsx",
       "!**/coverage/**",
       "!**/node_modules/**",
       "!**/.expo/**"
