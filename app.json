@@ -8,7 +8,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.azas01.mobileappfrontend"
     },
     "android": {
       "adaptiveIcon": {
@@ -39,17 +40,18 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "26630826-37a0-4c5e-8836-396dfbc2eb74"
-      }
-    },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
       "url": "https://u.expo.dev/26630826-37a0-4c5e-8836-396dfbc2eb74"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c03d6764-a231-4e44-8da3-a41df24daa64"
+      }
+    },
+    "owner": "elfbe"
   }
 }
