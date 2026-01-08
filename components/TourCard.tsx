@@ -1,11 +1,11 @@
 import { COLORS } from "@/constants/Colors";
 import { formatDateDMY } from "@/utility/timeConverter";
+import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { useRouter } from "expo-router";
 import { TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
-import { SkeletonImage } from "./SkeletonImage";
-import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { ContinueButton } from "./ContinueButton";
+import { SkeletonImage } from "./SkeletonImage";
 
 const Container = styled.View`
     background-color: ${COLORS.LIGHTYELLOW};
@@ -57,7 +57,7 @@ export function TourCard ({ tourId, destination, checkInDate, checkOutDate, imag
             </TouchableOpacity>
             <Row>
                 <Block>
-                    <DestinationText>{destination}</DestinationText>
+                    <DestinationText testID={"tour-destination"}>{destination}</DestinationText>
                     <TourCreatedDate>{checkInDateFormated} - {checkOutDateFormated}</TourCreatedDate>
                 </Block>
 

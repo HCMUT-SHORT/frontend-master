@@ -1,18 +1,18 @@
 import { InputField } from "@/components/InputField";
-import { TourCard } from "@/components/TourCard";
-import { Popup } from "@/components/PopUp";
-import { COLORS } from "@/constants/Colors";
-import { AppDispatch, RootState } from "@/redux/store";
-import { useState, useEffect, useCallback } from "react";
-import { View, FlatList } from "react-native";
-import styled from "styled-components/native";
-import { useDispatch, useSelector } from "react-redux";
-import { useFocusEffect } from "@react-navigation/native";
-import { createShareCode, lookupShareCode, joinSharedTour } from "@/hooks/shareData";
-import { TourState } from "@/constants/type";
-import { setLookupTour, setShareError } from "@/redux/shareSlice";
 import { ShareCodeModal } from "@/components/Modal";
+import { Popup } from "@/components/PopUp";
+import { TourCard } from "@/components/TourCard";
+import { COLORS } from "@/constants/Colors";
+import { TourState } from "@/constants/type";
+import { createShareCode, joinSharedTour, lookupShareCode } from "@/hooks/shareData";
+import { setLookupTour, setShareError } from "@/redux/shareSlice";
+import { AppDispatch, RootState } from "@/redux/store";
+import { useFocusEffect } from "@react-navigation/native";
 import * as Sentry from "@sentry/react-native";
+import { useCallback, useEffect, useState } from "react";
+import { FlatList, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+import styled from "styled-components/native";
 
 const Container = styled.View`
   flex: 1;
@@ -32,7 +32,7 @@ const Title = styled.Text`
 `;
 
 const Separator = styled.View`
-    height: 20px
+    height: 20px;
 `;
 
 export default function Tours() {
