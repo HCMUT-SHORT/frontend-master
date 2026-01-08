@@ -151,8 +151,8 @@ export default function Onboarding() {
             </FlatListContainer>
 
             <PaginationDotContainer>
-                {SLIDES.map((_, index) => (
-                    <PaginationDot key={index} index={index} scrollX={scrollX}/>
+                {SLIDES.map((item, index) => (
+                    <PaginationDot key={item.id} index={index} scrollX={scrollX}/>
                 ))}
             </PaginationDotContainer>
 
