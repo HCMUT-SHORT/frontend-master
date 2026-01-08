@@ -2,85 +2,78 @@ import { LoadingScreen } from "@/components/LoadingScreen";
 import { COLORS } from "@/constants/Colors";
 import { store } from "@/redux/store";
 import { Asset } from "expo-asset";
+import Constants from "expo-constants";
 import { useFonts } from "expo-font";
 import { Slot, useNavigationContainerRef } from "expo-router";
 import { useEffect, useState } from "react";
 import { Provider } from "react-redux";
-import * as Sentry from "@sentry/react-native";
 
-export const navigationIntegration = Sentry.reactNavigationIntegration();
-Sentry.init({
-	dsn: "https://92af4dd55c0b2c040b66eb6a71a6e813@o4510505370189824.ingest.us.sentry.io/4510505391620096",
-	tracesSampleRate: 1.0, 
-	sendDefaultPii: true,
-	enableAutoSessionTracking: true,
-	sessionTrackingIntervalMillis: 5000,
-	enableUserInteractionTracing: true,
-  	profilesSampleRate: 1.0,  
- 	replaysSessionSampleRate: 1.0,
-	normalizeDepth: 10,
-	integrations: [
-		Sentry.mobileReplayIntegration({
-		maskAllText: true,
-		maskAllImages: true,
-		}), 
-		navigationIntegration,
-		Sentry.hermesProfilingIntegration({
-		platformProfilers: true,
-		}), 
-	],
-  	enableAutoPerformanceTracing: true,
-	// debug: true
+let Sentry: any = null;
+let navigationIntegration: any = null;
 
-});
+if (!Constants.appOwnership) {
+  // 👉 Chỉ chạy trên Dev build / APK
+  Sentry = require("@sentry/react-native");
+
+  navigationIntegration = Sentry.reactNavigationIntegration();
+
+  Sentry.init({
+    dsn: "https://92af4dd55c0b2c040b66eb6a71a6e813@o4510505370189824.ingest.us.sentry.io/4510505391620096",
+    tracesSampleRate: 1.0,
+    profilesSampleRate: 1.0,
+    enableAutoSessionTracking: true,
+    integrations: [
+      navigationIntegration,
+      Sentry.mobileReplayIntegration({
+        maskAllText: true,
+        maskAllImages: true,
+      }),
+    ],
+  });
+}
 
 function RootLayout() {
-	const ref = useNavigationContainerRef();
-		useEffect(() => {
-			if (ref) {
-			navigationIntegration.registerNavigationContainer(ref);
-			}
-	}, [ref]);
-	useEffect(() => {
-		Sentry.setUser({
-		id: "short_test",
-		username: "HCMUT_SHORT",
-		});
-		Sentry.setTag("group", "short");
-	}, []);
+  const ref = useNavigationContainerRef();
 
-	const [loaded] = useFonts({
-		'Nunito-Regular': require('../assets/fonts/Nunito-Regular.ttf'),
-		'Nunito-SemiBold': require('../assets/fonts/Nunito-SemiBold.ttf'),
-		'Nunito-Medium': require('../assets/fonts/Nunito-Medium.ttf')
-	});
+  useEffect(() => {
+    if (Sentry && ref) {
+      navigationIntegration.registerNavigationContainer(ref);
 
-	const [assetsLoaded, setAssetsLoaded] = useState(false);
+      Sentry.setUser({
+        id: "short_test",
+        username: "HCMUT_SHORT",
+      });
+      Sentry.setTag("group", "short");
+    }
+  }, [ref]);
 
-	useEffect(() => {
-		const preloadAsset = async () => {
-			const images = [
-				require("@/assets/images/scenery.jpg"),
-				require("@/assets/images/character.png"),
-			];
+  const [fontsLoaded] = useFonts({
+    "Nunito-Regular": require("../assets/fonts/Nunito-Regular.ttf"),
+    "Nunito-SemiBold": require("../assets/fonts/Nunito-SemiBold.ttf"),
+    "Nunito-Medium": require("../assets/fonts/Nunito-Medium.ttf"),
+  });
 
-			await Asset.loadAsync(images);
-			setAssetsLoaded(true);
-		};
+  const [assetsLoaded, setAssetsLoaded] = useState(false);
 
-		preloadAsset();
-	}, [])
+  useEffect(() => {
+    Asset.loadAsync([
+      require("@/assets/images/scenery.jpg"),
+      require("@/assets/images/character.png"),
+    ]).then(() => setAssetsLoaded(true));
+  }, []);
 
-	if (!loaded || !assetsLoaded) return <LoadingScreen bgColor={COLORS.LIGHTGREEN}/>;
+  if (!fontsLoaded || !assetsLoaded) {
+    return <LoadingScreen bgColor={COLORS.LIGHTGREEN} />;
+  }
 
-	return (
-		<Provider store={store}>
-			{!loaded || !assetsLoaded ? (
-				<LoadingScreen bgColor={COLORS.LIGHTGREEN} />
-			) : (
-				<Slot />
-			)}
-		</Provider>
-	)
+  const App = (
+    <Provider store={store}>
+      <Slot />
+    </Provider>
+  );
+
+  // 👉 Chỉ wrap khi có Sentry
+  return Sentry ? Sentry.wrap(App) : App;
 }
-export default Sentry.wrap(RootLayout);
+
+export default RootLayout;

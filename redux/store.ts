@@ -1,13 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
+import Constants from "expo-constants";
+import shareReducer from "./shareSlice";
 import tourCreateReducer from "./tourCreateSlice";
 import toursReducer from "./toursSlice";
 import userReducer from "./userSlice";
-import shareReducer from "./shareSlice";
-import * as Sentry from "@sentry/react-native";
 
-const sentryReduxEnhancer = Sentry.createReduxEnhancer({
-  // Optionally pass options listed below
-});
+let enhancers: any[] = [];
+
+if (!Constants.appOwnership) {
+  // Bare / Dev build / APK
+  const Sentry = require("@sentry/react-native");
+
+  const sentryReduxEnhancer = Sentry.createReduxEnhancer();
+  enhancers.push(sentryReduxEnhancer);
+}
 
 export const store = configureStore({
     reducer: {
@@ -16,9 +22,8 @@ export const store = configureStore({
         tours: toursReducer,
         share: shareReducer
     },
-    enhancers: (getDefaultEnhancers) => {
-        return getDefaultEnhancers().concat(sentryReduxEnhancer);
-    },
+    enhancers: (getDefaultEnhancers) =>
+        getDefaultEnhancers().concat(enhancers),
 });
 
 export type RootState = ReturnType<typeof store.getState>;

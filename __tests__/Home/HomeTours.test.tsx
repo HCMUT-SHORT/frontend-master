@@ -1,6 +1,6 @@
 import Tours from '@/app/home/tours';
 import { configureStore } from '@reduxjs/toolkit';
-import { render } from '@testing-library/react-native';
+import { fireEvent, render } from '@testing-library/react-native';
 import { Provider } from 'react-redux';
 import shareReducer from "../../redux/shareSlice";
 import toursReducer from "../../redux/toursSlice";
@@ -51,5 +51,64 @@ describe('Tours Component', () => {
 		});
 	
 		expect(getByText('Tour của tôi')).toBeTruthy();
+	});
+
+	it('renders share code input', () => {
+		const { getByPlaceholderText } = renderWithStore({
+		  user: { token: 'test-token' },
+		  tours: [],
+		  share: { lookupTour: null, loading: false, error: null },
+		});
+	  
+		expect(
+		  getByPlaceholderText('Nhập mã tour được chia sẻ')
+		).toBeTruthy();
+	});
+
+	it('shows loading text when loading is true', () => {
+		const { getByText } = renderWithStore({
+		  user: { token: 'test-token' },
+		  tours: [],
+		  share: {
+			lookupTour: null,
+			loading: true,
+			error: null,
+		  },
+		});
+	  
+		expect(getByText('Đang xử lý...')).toBeTruthy();
+	});
+
+	it('renders tour cards from tours state', () => {
+		const { getByTestId } = renderWithStore({
+			user: { token: 'test-token' },
+			tours: [
+			{
+				id: '1',
+				destination: 'Tokyo',
+				imageUrl: '',
+				checkInDate: '2025-11-27',
+				checkOutDate: '2025-11-29',
+			},
+			],
+			share: { lookupTour: null, loading: false, error: null },
+		});
+
+		expect(getByTestId('tourcard-Tokyo')).toBeTruthy();
+	});
+
+
+	it('updates share code input value', () => {
+		const { getByPlaceholderText } = renderWithStore({
+		  user: { token: 'test-token' },
+		  tours: [],
+		  share: { lookupTour: null, loading: false, error: null },
+		});
+	  
+		const input = getByPlaceholderText('Nhập mã tour được chia sẻ');
+	  
+		fireEvent.changeText(input, 'abc123');
+	  
+		expect(input.props.value).toBe('abc123');
 	});
 });
