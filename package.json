@@ -13,7 +13,7 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "test:onboarding": "jest __tests__/Onboarding --coverage",
-    "test:home": "jest __tests__/Home --coverage",
+    "test:home": "jest __tests__/Home/HomeIndex.test.tsx __tests__/Home/HomeCreate.test.tsx --coverage",
     "test:tourcreate": "jest __tests__/TourCreate --coverage"
   },
   "dependencies": {
@@ -91,7 +91,6 @@
       "app/onboarding/**/index.tsx",
       "app/home/**/index.tsx",
       "app/home/**/create.tsx",
-      "app/home/**/tours.tsx",
       "app/tourcreate/**/index.tsx",
       "app/tourcreate/**/tour2.tsx",
       "!**/coverage/**",

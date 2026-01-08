@@ -1,8 +1,8 @@
-import React from "react";
-import { Modal, TouchableOpacity} from "react-native";
-import * as Clipboard from "expo-clipboard";
 import { COLORS } from "@/constants/Colors";
 import Feather from '@expo/vector-icons/Feather';
+import * as Clipboard from "expo-clipboard";
+import React from "react";
+import { Modal, TouchableOpacity } from "react-native";
 import styled from "styled-components/native";
 
 type ModalProps = {
@@ -52,7 +52,7 @@ const CloseButton = styled.TouchableOpacity`
 const CloseButtonText = styled.Text`
     font-family: "Nunito-SemiBold";
     font-size: 14px;
-    color: ${COLORS.DARKYELLOW}
+    color: ${COLORS.DARKYELLOW};
 `;
 
 export function ShareCodeModal ({ visible, code, onClose } : ModalProps) {

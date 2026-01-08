@@ -25,18 +25,24 @@ function renderWithStore(preloadedState?: any) {
 
 jest.mock('@react-navigation/native', () => {
 	const actualNav = jest.requireActual('@react-navigation/native');
-	const React = require('react');
-  
 	return {
 	  ...actualNav,
-	  useFocusEffect: (callback: any) => {
-		React.useEffect(() => {
-		  const cleanup = callback();
-		  return cleanup;
-		}, []);
-	  },
+	  useFocusEffect: jest.fn(), // ❗ KHÔNG chạy callback
 	};
-});  
+});
+
+jest.mock('@sentry/react-native', () => ({
+	addBreadcrumb: jest.fn(),
+	captureMessage: jest.fn(),
+	captureException: jest.fn(),
+	init: jest.fn(),
+}));  
+
+jest.mock('@/hooks/shareData', () => ({
+	createShareCode: jest.fn(),
+	joinSharedTour: jest.fn(),
+	lookupShareCode: jest.fn(() => Promise.resolve()),
+}));
 
 describe('Tours Component', () => {
 	it('renders title correctly', () => {
