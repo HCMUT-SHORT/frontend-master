@@ -3,11 +3,11 @@ import { WaitingCounter } from "@/components/WaitingCounter";
 import { COLORS } from "@/constants/Colors";
 import { AppDispatch, RootState } from "@/redux/store";
 import { addTour } from "@/redux/toursSlice";
+import * as Sentry from "@sentry/react-native";
 import { useRouter } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components/native";
-import * as Sentry from "@sentry/react-native";
 
 const Container = styled.View`
     background-color: ${COLORS.LIGHTGREEN};
@@ -112,7 +112,13 @@ export default function TourLoading() {
                     maxBudget: response.data[0].maxBudget.toString(),
                     travelType: response.data[0].travelType,
                     imageUrl: response.data[0].imageUrl,
-                    placesToVisit: []
+                    placesToVisit: [],
+                    placesToStay: [],
+                    transportations: [],
+                    changedPlaces: {},
+                    changedPlacesStay: {},
+                    placeToStayError: null,
+                    changedTransportations: {}
                 }));
                 // transaction.finish();
                 router.replace(`/editTour/${response.data[0].id}`);

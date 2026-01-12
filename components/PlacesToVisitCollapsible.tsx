@@ -9,7 +9,9 @@ import styled from "styled-components/native";
 import { SkeletonImage } from "./SkeletonImage";
 import { StarRender } from "./StarRender";
 
-const Container = styled.ScrollView`
+const Container = styled.ScrollView.attrs({
+    nestedScrollEnabled: true,
+})`
     max-height: 400px;
     margin-top: 15px;
 `;
