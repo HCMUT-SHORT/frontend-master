@@ -2,7 +2,8 @@ import { TourCard } from "@/components/TourCard";
 import { COLORS } from "@/constants/Colors";
 import { TourState } from "@/constants/type";
 import { RootState } from "@/redux/store";
-import { router } from "expo-router";
+import EvilIcons from '@expo/vector-icons/EvilIcons';
+import { useRouter } from "expo-router";
 import { Dimensions } from "react-native";
 import Animated, { Extrapolation, interpolate, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, type SharedValue } from "react-native-reanimated";
 import { useSelector } from "react-redux";
@@ -20,7 +21,25 @@ const Container = styled.View`
 `;
 
 const MainContainer = styled.View`
-    padding-top: 15%;
+    padding-top: 5%;
+`;
+
+const UserContainer = styled.View`
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-direction: row;
+    padding-bottom: 10%;
+    column-gap: 5px;
+`;
+
+const UserName = styled.Text`
+    font-size: 16px;
+    font-family: "Nunito-SemiBold";
+`;
+
+const UserButton = styled.TouchableOpacity`
+    
 `;
 
 const Title = styled.Text`
@@ -29,7 +48,7 @@ const Title = styled.Text`
 `;
 
 const MytourTextContainer = styled.View`
-    margin-top: 15%;
+    margin-top: 10%;
     justify-content: space-between;
     align-items: center;
     flex-direction: row;
@@ -82,6 +101,8 @@ function AnimatedCard({ index, scrollX, children } : { index: number; scrollX: S
 }
 
 export default function Home() {
+    const router = useRouter();
+    const user = useSelector((state: RootState) => state.user);
     const tours = useSelector((state: RootState) => state.tours);
     const today = new Date().getTime();
     const top3Tours = [...tours].filter(t => t.createdAt).sort((a, b) => {
@@ -116,6 +137,13 @@ export default function Home() {
     return (
         <Container>
             <MainContainer>
+                <UserContainer>
+                    <UserName>{user.username}</UserName>
+                    <UserButton onPress={() => router.push("/profile")}>
+                        <EvilIcons name="user" size={40} color="green" />
+                    </UserButton>
+                </UserContainer>
+
                 <Title>Khám phá thế giới hùng vĩ</Title>
 
                 <MytourTextContainer>
