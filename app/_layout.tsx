@@ -32,6 +32,14 @@ if (!Constants.appOwnership) {
   });
 }
 
+function AppProviders() {
+  return (
+    <Provider store={store}>
+      <Slot />
+    </Provider>
+  );
+}
+
 function RootLayout() {
   const ref = useNavigationContainerRef();
 
@@ -66,14 +74,12 @@ function RootLayout() {
     return <LoadingScreen bgColor={COLORS.LIGHTGREEN} />;
   }
 
-  const App = (
-    <Provider store={store}>
-      <Slot />
-    </Provider>
-  );
+  if (Sentry) {
+    const WrappedApp = Sentry.wrap(AppProviders);
+    return <WrappedApp />;
+  }
 
-  // 👉 Chỉ wrap khi có Sentry
-  return Sentry ? Sentry.wrap(App) : App;
+  return <AppProviders />;
 }
 
 export default RootLayout;
